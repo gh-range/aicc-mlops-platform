@@ -1,0 +1,26 @@
+# CODEOWNERS - Define code ownership for automated review requests
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @gh-range
+
+# Infrastructure
+/infra/ @gh-range
+/scripts/ @gh-range
+
+# Services - would assign to different teams in production
+/services/redis-cluster/ @gh-range
+/services/postgresql/ @gh-range
+/services/ollama/ @gh-range
+/services/jupyterhub/ @gh-range
+
+# Training & ML
+/training/ @gh-range
+/docker/training/ @gh-range
+
+# Documentation - everyone should be able to contribute
+/docs/ @gh-range
+
+# CI/CD - requires infra team approval
+/.github/workflows/ @gh-range
+/gitops/ @gh-range
