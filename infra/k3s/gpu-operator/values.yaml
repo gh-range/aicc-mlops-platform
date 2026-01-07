@@ -1,0 +1,64 @@
+# GPU Operator Helm Values
+# For k3s with pre-installed NVIDIA driver 590.x
+
+# Operator configuration
+operator:
+  defaultRuntime: containerd
+  runtimeClass: nvidia
+  
+# Use pre-installed host driver (590.x)
+driver:
+  enabled: false
+
+# NVIDIA Container Toolkit
+toolkit:
+  enabled: true
+  version: v1.14.3-centos7
+
+# Device Plugin
+devicePlugin:
+  enabled: true
+  version: v0.14.3
+  
+  # Configuration will be created separately for time-slicing
+  config:
+    name: ""
+    create: false
+
+# GPU Feature Discovery
+gfd:
+  enabled: true
+  version: v0.8.2
+
+# DCGM Exporter for Prometheus metrics
+dcgmExporter:
+  enabled: true
+  version: 3.1.8-3.1.5
+  serviceMonitor:
+    enabled: false  # Enable when Prometheus Operator is installed
+  
+# DCGM (Data Center GPU Manager)
+dcgm:
+  enabled: true
+  version: 3.1.8-1-ubuntu20.04
+
+# Node Feature Discovery
+nfd:
+  enabled: false  # Not needed for single node
+
+# MIG Manager (Multi-Instance GPU)
+migManager:
+  enabled: false  # RTX A4000 does not support MIG
+
+# GPU Direct Storage
+gds:
+  enabled: false  # Not needed for our use case
+
+# Validator
+validator:
+  enabled: false  # Can enable for testing
+
+# Node selectors and tolerations
+# Empty means deploy on all nodes
+nodeSelector: {}
+tolerations: []
