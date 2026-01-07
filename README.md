@@ -7,7 +7,7 @@ Production-ready K8s + MLOps platform on single-node with GPU support
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-k3s-326CE5?logo=kubernetes)](https://k3s.io/)
 [![NVIDIA GPU](https://img.shields.io/badge/NVIDIA-GPU%20Accelerated-76B900?logo=nvidia)](https://www.nvidia.com/)
 [![ArgoCD](https://img.shields.io/badge/GitOps-ArgoCD-EF7B4D?logo=argo)](https://argoproj.github.io/)
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python)](https://www.python.org/)
 
 > **Production-ready Kubernetes + MLOps platform on a single powerful workstation**  
 
