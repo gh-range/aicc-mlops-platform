@@ -1,26 +1,32 @@
 # GPU Operator Helm Values
-# For k3s with pre-installed NVIDIA driver 590.x
+# Environment: k3s + NVIDIA Driver 590.44.01 + CUDA 13.1 + RTX A4000
+# Let GPU Operator Chart manage component versions automatically
 
 # Operator configuration
 operator:
   defaultRuntime: containerd
   runtimeClass: nvidia
-  
-# Use pre-installed host driver (590.x)
+
+# Use pre-installed host driver (590.44.01)
 driver:
   enabled: false
 
-# NVIDIA Container Toolkit
+# NVIDIA Container Toolkit - k3s specific paths
 toolkit:
   enabled: true
-  version: v1.14.3-centos7
+  env:
+    - name: CONTAINERD_CONFIG
+      value: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
+    - name: CONTAINERD_SOCKET
+      value: /run/k3s/containerd/containerd.sock
+    - name: CONTAINERD_RUNTIME_CLASS
+      value: nvidia
+    - name: CONTAINERD_SET_AS_DEFAULT
+      value: "true"
 
 # Device Plugin
 devicePlugin:
   enabled: true
-  version: v0.14.3
-  
-  # Configuration will be created separately for time-slicing
   config:
     name: ""
     create: false
@@ -28,37 +34,53 @@ devicePlugin:
 # GPU Feature Discovery
 gfd:
   enabled: true
-  version: v0.8.2
 
-# DCGM Exporter for Prometheus metrics
-dcgmExporter:
-  enabled: true
-  version: 3.1.8-3.1.5
-  serviceMonitor:
-    enabled: false  # Enable when Prometheus Operator is installed
-  
-# DCGM (Data Center GPU Manager)
+# DCGM
 dcgm:
   enabled: true
-  version: 3.1.8-1-ubuntu20.04
 
-# Node Feature Discovery
+# DCGM Exporter with resource limits
+dcgmExporter:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Node Feature Discovery - required by GPU Operator
 nfd:
-  enabled: false  # Not needed for single node
+  enabled: true
 
-# MIG Manager (Multi-Instance GPU)
+# MIG not supported on RTX A4000
 migManager:
-  enabled: false  # RTX A4000 does not support MIG
+  enabled: false
 
-# GPU Direct Storage
+# GPU Direct Storage not needed
 gds:
-  enabled: false  # Not needed for our use case
+  enabled: false
 
-# Validator
+# Validator - disable for production
 validator:
-  enabled: false  # Can enable for testing
+  enabled: false
 
-# Node selectors and tolerations
-# Empty means deploy on all nodes
+# Sandbox Workloads
+sandboxWorkloads:
+  enabled: false
+
+# Deploy on all nodes
 nodeSelector: {}
 tolerations: []
+
+# Daemonset update strategy
+daemonsets:
+  updateStrategy: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+
+# Priority for GPU Operator pods
+priorityClassName: system-node-critical

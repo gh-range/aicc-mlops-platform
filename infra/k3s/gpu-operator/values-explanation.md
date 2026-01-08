@@ -1,167 +1,326 @@
 # GPU Operator Helm Values Explanation
 
-## Configuration Choices
-
-### driver.enabled: false
-
-**Reason**: We have NVIDIA driver 590.x pre-installed on Ubuntu host
-
-**Alternative**: Set to `true` to use containerized driver
-- Pros: Fully managed by operator
-- Cons: 2GB+ download, more complex, redundant in our case
+**Environment**: k3s v1.34.3 + NVIDIA Driver 590.44.01 + CUDA 13.1 + RTX A4000  
+**GPU Operator Version**: v25.10.1
 
 ---
 
-### toolkit.enabled: true
+## Design Decisions
 
-**Purpose**: Install NVIDIA Container Toolkit
+### 1. driver.enabled: false
 
-**What it does**:
-- Configures containerd to use nvidia-container-runtime
-- Enables containers to access GPU devices
-- Required for any GPU workload
+**Decision**: Use pre-installed host driver from NVIDIA (590.44.01)
+
+**Reasoning**:
+- Newest NVIDIA driver already installed on Ubuntu 24.04 host
+- Avoids 2GB+ containerized driver download
+- More reliable for single-node development setup
+
+**Trade-offs**:
+- [o] Faster deployment, no driver container overhead
+- [x] Must manually upgrade driver when needed
+- [x] Less portable across heterogeneous clusters
 
 ---
 
-### devicePlugin.enabled: true
+### 2. Component Versions: Auto-managed
 
-**Purpose**: Advertise GPU resources to Kubernetes
+**Decision**: Let GPU Operator Chart manage all component versions
+
+**Reasoning**:
+- NVIDIA tests component compatibility for each Chart release
+- Avoids version mismatch issues
+- Simplifies upgrades - only change Chart version
+- Reduces maintenance overhead
+
+**What Chart v25.10.1 includes**:
+- NVIDIA Container Toolkit (compatible with CUDA 11.0-13.x)
+- Device Plugin (supports time-slicing and MIG)
+- GPU Feature Discovery (node labeling)
+- DCGM + DCGM Exporter (metrics collection)
+- Node Feature Discovery (hardware detection)
+
+---
+
+### 3. toolkit.enabled: true with k3s-specific paths
+
+**Purpose**: Install NVIDIA Container Toolkit for GPU access in containers
+
+**k3s-specific configuration**:
+```yaml
+env:
+  - name: CONTAINERD_CONFIG
+    value: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
+  - name: CONTAINERD_SOCKET
+    value: /run/k3s/containerd/containerd.sock
+  - name: CONTAINERD_RUNTIME_CLASS
+    value: nvidia
+  - name: CONTAINERD_SET_AS_DEFAULT
+    value: "true"
+```
+
+**Critical**: k3s uses different paths than standard Kubernetes
 
 **What it does**:
+
+1. Modifies containerd config to add nvidia runtime
+2. Creates RuntimeClass 'nvidia' for GPU pods
+3. Enables containers to access GPU devices via /dev/nvidia*
+
+---
+
+### 4. devicePlugin.enabled: true
+
+**Purpose**: Advertise GPU resources to Kubernetes scheduler
+
+**What it provides**:
+
 - Discovers GPUs via nvidia-smi
-- Registers `nvidia.com/gpu` resource
+- Registers `nvidia.com/gpu: 1` in node allocatable resources
 - Handles GPU allocation to pods
+- Supports time-slicing (configured separately)
 
-**Time-slicing**: Will be configured separately via ConfigMap
+**Verification**:
+
+```bash
+kubectl get nodes -o json | jq '.items[].status.allocatable'
+# Should show: "nvidia.com/gpu": "1"
+```
 
 ---
 
-### gfd.enabled: true
+### 5. gfd.enabled: true
 
-**Purpose**: GPU Feature Discovery
+**Purpose**: GPU Feature Discovery - automatic node labeling
+
+**Labels applied to node**:
+
+```yaml
+nvidia.com/gpu.present: "true"
+nvidia.com/gpu.product: NVIDIA-RTX-A4000
+nvidia.com/gpu.memory: 16384
+nvidia.com/gpu.count: "1"
+nvidia.com/cuda.driver.major: "590"
+nvidia.com/cuda.driver.minor: "44"
+nvidia.com/cuda.runtime.major: "13"
+nvidia.com/cuda.runtime.minor: "1"
+```
+
+**Use case**: Schedule workloads to specific GPU types
+
+```yaml
+nodeSelector:
+  nvidia.com/gpu.product: NVIDIA-RTX-A4000
+```
+
+---
+
+### 6. dcgm + dcgmExporter.enabled: true
+
+**Purpose**: GPU monitoring and metrics export to Prometheus
+
+**Architecture**:
+
+- DCGM: Collects GPU telemetry (utilization, memory, temp, power)
+- DCGM Exporter: Exposes metrics on port 9400 in Prometheus format
+
+**Resource limits set**:
+
+```yaml
+dcgmExporter:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+```
+
+**Key metrics exposed**:
+
+- `DCGM_FI_DEV_GPU_UTIL` - GPU utilization %
+- `DCGM_FI_DEV_FB_USED` - Memory used (MB)
+- `DCGM_FI_DEV_GPU_TEMP` - Temperature (C)
+- `DCGM_FI_DEV_POWER_USAGE` - Power (W)
+
+**Access metrics**:
+
+```bash
+POD=$(kubectl get pod -n gpu-operator -l app=nvidia-dcgm-exporter -o name | head -1)
+kubectl port-forward -n gpu-operator $POD 9400:9400
+curl localhost:9400/metrics | grep DCGM
+```
+
+---
+
+### 7. nfd.enabled: true
+
+**Decision**: Enable Node Feature Discovery
 
 **What it does**:
-- Labels nodes with GPU properties
-- Example labels:
-  - `nvidia.com/gpu.product=NVIDIA-RTX-A4000`
-  - `nvidia.com/gpu.memory=16384`
-  - `nvidia.com/cuda.driver.major=590`
 
-**Use case**: Schedule pods to specific GPU types
+- Detects CPU, kernel, PCI, USB features
+- Labels nodes with hardware capabilities
+- Required dependency for GPU Operator to function
 
----
-
-### dcgmExporter.enabled: true
-
-**Purpose**: Export GPU metrics to Prometheus
-
-**Metrics exposed**:
-- GPU utilization
-- Memory usage
-- Temperature
-- Power consumption
-- Clock speeds
-
-**Endpoint**: Port 9400 on each node
+**Note**: pod gpu-feature-discovery will be pending if nfd.enabled: false
 
 ---
 
-### nfd.enabled: false
+### 8. migManager.enabled: false
 
-**Reason**: Node Feature Discovery not needed for single node
+**Decision**: RTX A4000 does not support MIG
 
-**When to enable**: Multi-node cluster with diverse hardware
+**MIG compatibility**:
 
----
+- [o] Supported: A100, A30, H100, H200
+- [x] Not supported: RTX series (A4000/A5000/A6000), V100, T4
 
-### migManager.enabled: false
+**What is MIG**: Multi-Instance GPU - partitions single GPU into up to 7 isolated instances with dedicated memory/compute.
 
-**Reason**: RTX A4000 does not support MIG (Multi-Instance GPU)
-
-**MIG support**: Only on A100, A30, H100 GPUs
-
----
-
-### validator.enabled: false
-
-**Purpose**: Run validation tests after installation
-
-**When to enable**: Troubleshooting or certification
-
-**Why disabled**: We'll validate manually with test pods
+**Our case**: Single RTX A4000 for development/research, MIG not applicable.
 
 ---
 
-## Version Selection
+### 9. validator.enabled: false
 
-All component versions are matched to work together:
-- Toolkit: v1.14.3
-- Device Plugin: v0.14.3
-- GFD: v0.8.2
-- DCGM Exporter: 3.1.8
+**Decision**: Manual validation via post-install script
 
-These are tested and compatible versions from NVIDIA.
+**Why disabled**:
 
----
+- Validator pods consume resources and stay as Completed
+- We perform comprehensive verification in `post-install-verify.sh`
+- Can enable temporarily for troubleshooting
 
-## Runtime Configuration
+**Enable for debugging**:
+
 ```yaml
-operator:
-  defaultRuntime: containerd
+validator:
+  enabled: true
 ```
 
-**Reason**: k3s uses containerd (not docker)
-
-**Effect**: Operator configures containerd to use nvidia-runtime
 
 ---
 
-## Resource Requirements
+## Resource Overhead
 
-GPU Operator components use minimal resources:
-- Operator pod: ~100Mi memory
-- Device plugin: ~50Mi per node
-- DCGM exporter: ~100Mi per node
-- Toolkit: ~50Mi per node
+GPU Operator components on single node:
 
-**Total overhead**: ~300Mi memory per node (negligible on 128GB system)
+
+| Component | CPU | Memory | Purpose |
+| :-- | :-- | :-- | :-- |
+| gpu-operator | 100m | 100Mi | Operator controller |
+| nvidia-container-toolkit | 50m | 50Mi | Runtime configuration |
+| nvidia-device-plugin | 50m | 50Mi | Resource advertising |
+| nvidia-dcgm | 100m | 100Mi | GPU monitoring |
+| nvidia-dcgm-exporter | 100m | 128Mi | Metrics export |
+| gpu-feature-discovery | 50m | 50Mi | Node labeling |
+| nfd-master | 50m | 50Mi | NFD controller |
+| nfd-worker | 50m | 50Mi | NFD worker |
+
+**Total**: ~550m CPU, ~578Mi memory (negligible on 10900F + 128GB)
 
 ---
 
-## Updates and Maintenance
+## Upgrade Process
 
-To upgrade GPU Operator:
+### Check for updates:
+
 ```bash
-# Update Helm repo
 helm repo update
+helm search repo nvidia/gpu-operator
+```
 
-# Check new versions
-helm search repo nvidia/gpu-operator --versions
 
-# Upgrade
+### Upgrade to newer version:
+
+```bash
 helm upgrade gpu-operator nvidia/gpu-operator \
-  -n gpu-operator \
-  -f values.yaml
+  --namespace gpu-operator \
+  --values infra/k3s/gpu-operator/values.yaml \
+  --wait
+```
+
+### Rollback if needed:
+
+```bash
+helm rollback gpu-operator -n gpu-operator
 ```
 
 ---
 
-## Customization for Production
+## Production Scaling Considerations
 
-For production multi-node cluster, consider:
+When scaling to multi-node cluster:
+
+### 1. Node selectors for GPU nodes
+
 ```yaml
-# Enable ServiceMonitor for Prometheus Operator
-dcgmExporter:
-  serviceMonitor:
-    enabled: true
-
-# Node selectors for GPU nodes only
 nodeSelector:
   node-role.kubernetes.io/gpu: "true"
+```
 
-# Tolerations for tainted GPU nodes
+### 2. Tolerations for tainted GPU nodes
+
+```yaml
 tolerations:
 - key: nvidia.com/gpu
   operator: Exists
   effect: NoSchedule
 ```
+
+### 3. Enable Prometheus ServiceMonitor
+
+```yaml
+dcgmExporter:
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+```
+
+### 4. Namespace-level GPU quotas
+
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: gpu-quota
+spec:
+  hard:
+    requests.nvidia.com/gpu: "2"
+```
+
+---
+
+## Troubleshooting
+
+### GPU not advertised
+
+```bash
+kubectl logs -n gpu-operator -l app=nvidia-device-plugin-daemonset
+kubectl describe node | grep nvidia.com/gpu
+```
+
+
+### DCGM metrics unavailable
+
+```bash
+kubectl get pods -n gpu-operator | grep dcgm
+POD=$(kubectl get pod -n gpu-operator -l app=nvidia-dcgm-exporter -o jsonpath='{.items.metadata.name}')
+POD_IP=$(kubectl get pod -n gpu-operator $POD -o jsonpath='{.status.podIP}')
+curl http://$POD_IP:9400/metrics | head
+```
+
+### Containerd not configured
+
+```bash
+cat /var/lib/rancher/k3s/agent/etc/containerd/config.toml | grep nvidia
+systemctl restart k3s
+```
+
+---
+
+## Summary
+
+**Configuration philosophy**: Minimal overrides, leverage Chart defaults
+**Target environment**: Single-node k3s development cluster with RTX A4000
+**Production-ready**: Full monitoring, resource limits, and upgrade path included
+**Next steps**: GPU time-slicing configuration, Prometheus integration
