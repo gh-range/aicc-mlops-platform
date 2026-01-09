@@ -4,8 +4,9 @@
 # IDE
 .vscode/
 .idea/
-*.swp
+*.iml
 *.swo
+
 
 # Kubernetes
 *.kubeconfig
@@ -17,6 +18,7 @@ kubeconfig
 *.key
 *.crt
 secrets/
+*.secret
 .env
 .env.*
 
@@ -32,14 +34,28 @@ charts/*/Chart.lock
 # Python
 __pycache__/
 *.pyc
+*.py[cod]
+*$py.class
+.Python
 .pytest_cache/
+.so
 venv/
+env/
 
 # Logs
 *.log
+logs/
 
 # Temporary files
 tmp/
 temp/
+*.swp
+*~
 *.tmp
-EOF
+
+# Trivy cache
+.trivyignore
+trivy-cache
+
+# Local test outputs
+test-results/
