@@ -170,6 +170,23 @@ else
 fi
 echo ""
 
+# 9. Verify Persistence Mode
+echo "[*] Step 9: Verify GPU Persistence Mode"
+((CHECKS++)) || true
+
+PERSISTENCE_MODE=$(nvidia-smi --query-gpu=persistence_mode --format=csv,noheader 2>/dev/null || echo "Unknown")
+echo "Persistence mode: $PERSISTENCE_MODE"
+
+if [ "$PERSISTENCE_MODE" = "Enabled" ]; then
+  check_pass "GPU Persistence mode is enabled"
+else
+  check_fail "Persistence mode is disabled"
+  echo "    This may cause Device Plugin instability"
+  echo "    Enable with: sudo nvidia-smi -pm 1"
+  echo "    Or run: sudo bash setup-nvidia-persistence.sh"
+fi
+echo ""
+
 # Summary
 echo "=========================================="
 echo "Verification Summary"

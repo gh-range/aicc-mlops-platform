@@ -197,6 +197,34 @@ validator:
   enabled: true
 ```
 
+---
+
+### 10. Prerequisites: GPU Persistence Mode
+
+**Purpose**: Persistence Mode keeps the NVIDIA driver loaded in memory even when no applications are using the GPU.
+
+**Impact on GPU Operator**:
+- Device Plugin uses NVML to continuously query GPU status
+- Without persistence mode, NVML initialization can fail intermittently
+- Result: GPU resources may not be advertised (`nvidia.com/gpu: 0`)
+
+**Performance Impact**:
+
+| Mode | GPU Init Time | Device Plugin Stability | Pod Startup |
+|------|---------------|------------------------|-------------|
+| Off  | 1-3 seconds   | [x] Unstable            | Slow        |
+| On   | < 10 ms       | [o] Stable              | Fast        |
+
+### Setup Before GPU Operator Installation
+
+```bash
+# Run persistence setup script
+sudo bash infra/k3s/gpu-operator/setup-nvidia-persistence.sh
+
+# Verify
+nvidia-smi | grep "Persistence-M"
+# Should show: Persistence-M | On
+```
 
 ---
 

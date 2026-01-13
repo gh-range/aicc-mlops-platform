@@ -34,7 +34,30 @@ else
 fi
 echo ""
 
-# 3. Check Helm
+# 3 Check GPU Persistence Mode
+echo "[*] Step 2: Check GPU Persistence Mode"
+((CHECKS_TOTAL++)) || true
+
+PERSISTENCE_MODE=$(nvidia-smi --query-gpu=persistence_mode --format=csv,noheader 2>/dev/null || echo "Unknown")
+echo "    Persistence mode: $PERSISTENCE_MODE"
+
+if [ "$PERSISTENCE_MODE" = "Enabled" ]; then
+  check_passed "Persistence mode is enabled"
+else
+  check_warning "Persistence mode is disabled"
+  echo "    GPU Operator Device Plugin requires persistence mode"
+  echo "    Run setup script: sudo bash 0.setup-nvidia-persistence.sh"
+  echo ""
+  read -p "Continue anyway? (yes/no): " CONTINUE_WITHOUT_PERSIST
+  if [ "$CONTINUE_WITHOUT_PERSIST" != "yes" ]; then
+    echo "Installation cancelled"
+    echo "Please enable persistence mode first"
+    exit 1
+  fi
+fi
+echo ""
+
+# 4. Check Helm
 echo "[*] Step 3: Check Helm Installation"
 if command -v helm &>/dev/null; then
   HELM_VERSION=$(helm version --short)
@@ -45,7 +68,7 @@ else
 fi
 echo ""
 
-# 4. Check if GPU Operator already installed
+# 5. Check if GPU Operator already installed
 echo "[*] Step 4: Check for Existing GPU Operator"
 if kubectl get namespace gpu-operator &>/dev/null; then
   echo "[!] Namespace gpu-operator already exists"
@@ -67,7 +90,7 @@ else
 fi
 echo ""
 
-# 5. Check NVIDIA Helm repo
+# 6. Check NVIDIA Helm repo
 echo "[*] Step 5: Check NVIDIA Helm Repository"
 if helm repo list | grep -q "^nvidia"; then
   echo "[o] NVIDIA Helm repo is configured"
@@ -84,23 +107,23 @@ else
 fi
 echo ""
 
-# 6. Update Helm repos
+# 7. Update Helm repos
 echo "[*] Step 6: Update Helm Repositories"
 helm repo update
 echo ""
 
-# 7. Check available GPU Operator versions
+# 8. Check available GPU Operator versions
 echo "[*] Step 7: Available GPU Operator Versions"
 helm search repo nvidia/gpu-operator --versions | head -6
 echo ""
 
-# 8. Check node resources
+# 9. Check node resources
 echo "[*] Step 8: Node Resource Check"
 echo "Available resources:"
 kubectl get nodes -o custom-columns=NAME:.metadata.name,CPU:.status.allocatable.cpu,MEMORY:.status.allocatable.memory
 echo ""
 
-# 9. Check for conflicting resources
+# 10. Check for conflicting resources
 echo "[*] Step 9: Check for Conflicting Resources"
 CONFLICTS=0
 
