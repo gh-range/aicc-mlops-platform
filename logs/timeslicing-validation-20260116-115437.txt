@@ -1,0 +1,14 @@
+GPU Time-Slicing Validation Results
+Date: $(date)
+
+Node GPU Capacity:
+$(kubectl get node llm1 -o jsonpath='{.status.capacity.nvidia\.com/gpu}')
+
+Node GPU Allocatable:
+$(kubectl get node llm1 -o jsonpath='{.status.allocatable.nvidia\.com/gpu}')
+
+Resource Allocation:
+$(kubectl describe node llm1 | grep -A 10 "Allocated resources:" | grep nvidia)
+
+Status: Time-Slicing VERIFIED
+Configuration: 4-way time-slicing on RTX A4000

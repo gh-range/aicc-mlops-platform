@@ -1,0 +1,45 @@
+operator:
+  defaultRuntime: containerd
+
+devicePlugin:
+  enabled: true
+  version: v0.18.1
+
+  # Use Time-Slicing ConfigMap
+  config:
+    name: device-plugin-config
+    default: config.yaml
+  
+  env:
+  - name: PASS_DEVICE_SPECS
+    value: "true"
+  - name: FAIL_ON_INIT_ERROR
+    value: "true"
+  - name: DEVICE_LIST_STRATEGY
+    value: "envvar"
+  - name: DEVICE_ID_STRATEGY
+    value: "uuid"
+
+toolkit:
+  enabled: true
+  env:
+  - name: CONTAINERD_CONFIG
+    value: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
+  - name: CONTAINERD_SOCKET
+    value: /run/k3s/containerd/containerd.sock
+  - name: CONTAINERD_RUNTIME_CLASS
+    value: nvidia
+  - name: CONTAINERD_SET_AS_DEFAULT
+    value: "true"
+
+driver:
+  enabled: false
+
+dcgm:
+  enabled: true
+
+dcgmExporter:
+  enabled: true
+
+gfd:
+  enabled: true

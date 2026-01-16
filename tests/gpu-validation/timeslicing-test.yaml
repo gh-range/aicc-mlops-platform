@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-timeslicing-test
+  namespace: default
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: gpu-test
+  template:
+    metadata:
+      labels:
+        app: gpu-test
+    spec:
+      containers:
+      - name: cuda
+        image: nvidia/cuda:13.1.0-base-ubuntu24.04
+        command: ["/bin/bash","-c"]
+        args:
+          - |
+            echo "Pod: $HOSTNAME";
+            echo "GPU UUID: $NVIDIA_VISIBLE_DEVICES";
+            nvidia-smi -L;
+            echo "Sleeping...";
+            sleep 3600;        
+        resources:
+          limits:
+            nvidia.com/gpu: 1  
