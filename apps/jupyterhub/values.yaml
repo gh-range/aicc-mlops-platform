@@ -1,0 +1,98 @@
+# JupyterHub Configuration for GPU Time-Slicing
+
+hub:
+  db:
+    type: sqlite-memory
+
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+      nvidia.com/gpu: "0"
+
+    requests:
+      cpu: 200m
+      memory: 512Mi
+      nvidia.com/gpu: "0" 
+
+  config:
+    JupyterHub:
+      admin_access: true
+      authenticator_class: dummy
+
+proxy:
+  chp:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+        nvidia.com/gpu: "0"
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        nvidia.com/gpu: "0"
+
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+
+# User Scheduler don't need GPU
+scheduling:
+  userScheduler:
+    enabled: true
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        nvidia.com/gpu: "0"
+      limits:
+        cpu: 200m
+        memory: 512Mi
+        nvidia.com/gpu: "0"
+
+# Image Puller don't need GPU
+prePuller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      nvidia.com/gpu: "0"
+    limits:
+      cpu: 200m
+      memory: 256Mi
+      nvidia.com/gpu: "0"
+  hook:
+    enabled: true
+  continuous:
+    enabled: true
+
+singleuser:
+  extraResource:
+    limits:
+      nvidia.com/gpu: "1"
+    guarantees:
+      nvidia.com/gpu: "1"
+
+  cpu:
+    limit: 2
+    guarantee: 0.5
+  memory:
+    limit: 4Gi
+    guarantee: 1Gi
+
+  image:
+    name: quay.io/jupyter/minimal-notebook
+    tag: ubuntu-24.04
+    pullPolicy: IfNotPresent
+
+  storage:
+    type: dynamic
+    dynamic:
+      storageClass: local-path
+    capacity: 10Gi
+
+rbac:
+  create: true
+
