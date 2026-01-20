@@ -7,12 +7,12 @@ hub:
   resources:
     limits:
       cpu: 2000m
-      memory: 2Gi
+      memory: 2G
       nvidia.com/gpu: "0"
 
     requests:
       cpu: 200m
-      memory: 512Mi
+      memory: 512M
       nvidia.com/gpu: "0" 
 
   config:
@@ -25,11 +25,11 @@ proxy:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
+        memory: 512M
         nvidia.com/gpu: "0"
       requests:
         cpu: 100m
-        memory: 256Mi
+        memory: 256M
         nvidia.com/gpu: "0"
 
   service:
@@ -45,11 +45,11 @@ scheduling:
     resources:
       requests:
         cpu: 100m
-        memory: 256Mi
+        memory: 256M
         nvidia.com/gpu: "0"
       limits:
         cpu: 200m
-        memory: 512Mi
+        memory: 512M
         nvidia.com/gpu: "0"
 
 # Image Puller don't need GPU
@@ -57,11 +57,11 @@ prePuller:
   resources:
     requests:
       cpu: 100m
-      memory: 128Mi
+      memory: 128M
       nvidia.com/gpu: "0"
     limits:
       cpu: 200m
-      memory: 256Mi
+      memory: 256M
       nvidia.com/gpu: "0"
   hook:
     enabled: true
@@ -79,8 +79,8 @@ singleuser:
     limit: 2
     guarantee: 0.5
   memory:
-    limit: 4Gi
-    guarantee: 1Gi
+    limit: 4G
+    guarantee: 1G
 
   image:
     name: quay.io/jupyter/minimal-notebook
@@ -91,7 +91,10 @@ singleuser:
     type: dynamic
     dynamic:
       storageClass: local-path
-    capacity: 10Gi
+    capacity: 10G
+
+  cloudMetadata:
+    blockWithIptables: false
 
 rbac:
   create: true
