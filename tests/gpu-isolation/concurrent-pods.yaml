@@ -1,0 +1,127 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod-1
+  namespace: gpu-test-a
+  labels:
+    app: gpu-isolation-test
+    pod-id: "1"
+spec:
+  restartPolicy: Never
+  containers:
+  - name: cuda-test
+    image: nvidia/cuda:13.1.0-base-ubuntu24.04
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        echo "Pod: gpu-pod-1";
+        echo "Namespace: gpu-test-a";
+        echo "Timestamp: $(date)";
+        echo "Sleeping for validation...";
+        sleep 3600;
+    resources:
+      requests:
+        nvidia.com/gpu: "1"
+        memory: "1G"
+        cpu: "500m"
+      limits:
+        nvidia.com/gpu: "1"
+        memory: "2G"
+        cpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod-2
+  namespace: gpu-test-a
+  labels:
+    app: gpu-isolation-test
+    pod-id: "2"
+spec:
+  restartPolicy: Never
+  containers:
+  - name: cuda-test
+    image: nvidia/cuda:13.1.0-base-ubuntu24.04
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        echo "Pod: gpu-pod-2";
+        echo "Namespace: gpu-test-a";
+        echo "Timestamp: $(date)";
+        echo "Sleeping for validation...";
+        sleep 3600;
+    resources:
+      requests:
+        nvidia.com/gpu: "1"
+        memory: "1G"
+        cpu: "500m"
+      limits:
+        nvidia.com/gpu: "1"
+        memory: "2G"
+        cpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod-1
+  namespace: gpu-test-b
+  labels:
+    app: gpu-isolation-test
+    pod-id: "1"
+spec:
+  restartPolicy: Never
+  containers:
+  - name: cuda-test
+    image: nvidia/cuda:13.1.0-base-ubuntu24.04
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        echo "Pod: gpu-pod-1";
+        echo "Namespace: gpu-test-b";
+        echo "Timestamp: $(date)";
+        echo "Sleeping for validation...";
+        sleep 3600;
+    resources:
+      requests:
+        nvidia.com/gpu: "1"
+        memory: "1G"
+        cpu: "500m"
+      limits:
+        nvidia.com/gpu: "1"
+        memory: "2G"
+        cpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod-2
+  namespace: gpu-test-b
+  labels:
+    app: gpu-isolation-test
+    pod-id: "2"
+spec:
+  restartPolicy: Never
+  containers:
+  - name: cuda-test
+    image: nvidia/cuda:13.1.0-base-ubuntu24.04
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        echo "Pod: gpu-pod-2";
+        echo "Namespace: gpu-test-b";
+        echo "Timestamp: $(date)";
+        echo "Sleeping for validation...";
+        sleep 3600;
+    resources:
+      requests:
+        nvidia.com/gpu: "1"
+        memory: "1G"
+        cpu: "500m"
+      limits:
+        nvidia.com/gpu: "1"
+        memory: "2G"
+        cpu: "1"
