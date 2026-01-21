@@ -55,7 +55,7 @@ kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/main
 **Pros:**
 - Direct control over driver version
 - No additional operators running
-- Simpler for single node
+- Simpler for single node
 
 **Cons:**
 - Manual setup on each node
@@ -159,7 +159,7 @@ helm install gpu-operator nvidia/gpu-operator \
 4. **Cost-Benefit**
    - Saves 2-3 hours/month vs manual installation
    - Reduces multi-node expansion time by 80%
-   - $150-$200/month savings (at $50/hour labor cost)
+   - Estimated labor cost savings at typical engineering rates
 
 5. **Future-Proof**
    - Easy to add nodes (DaemonSets automatically deploy)
@@ -271,7 +271,7 @@ kubectl get nodes -o json | jq '.items[].status.allocatable'
 ### Step 3: Test GPU Scheduling
 ```bash
 kubectl run test-gpu --rm -it --restart=Never \
-  --image=nvidia/cuda:12.0-base \
+  --image=nvidia/cuda:13.1-base-ubuntu24.04 \
   --limits=nvidia.com/gpu=1 \
   -- nvidia-smi
 ```
@@ -308,22 +308,24 @@ nvidia-smi
 
 ---
 
-## Migration to Full GPU Operator (Future)
+## Migration Path to Production SuperPod
 
-If we decide to use containerized driver later:
-```bash
-# 1. Uninstall current
-helm uninstall gpu-operator -n gpu-operator
+### Phase 1 (Current): MAV Node Validation
+- **Hardware**: RTX A4000 (Ampere/Ada architecture)
+- **Strategy**: Time-Slicing with 4 replicas
+- **Purpose**: Validate orchestration logic and multi-tenancy patterns
 
-# 2. Remove host driver
-sudo apt-get purge nvidia-*
-sudo reboot
+### Phase 2 (Target): NVIDIA B200 SuperPod
+- **Hardware**: NVIDIA B200 Blackwell GPUs
+- **Strategy**: MIG (Multi-Instance GPU) for hardware-level isolation
+- **Networking**: InfiniBand fabric with RDMA
+- **Scaling**: Proven architecture from MAV validates at SuperPod scale
 
-# 3. Reinstall with driver enabled
-helm install gpu-operator nvidia/gpu-operator \
-  --set driver.enabled=true \
-  --set driver.version=580.x
-```
+**Migration Approach:**
+- MAV node serves as reference implementation
+- Time-Slicing patterns translate to MIG instance allocation
+- GPU Operator configuration remains consistent across both phases
+- Monitoring and quota mechanisms identical at both scales
 
 ---
 
@@ -380,8 +382,8 @@ Pods with GPU get direct hardware access:
 | Item | Manual | GPU Operator |
 |------|--------|--------------|
 | Setup Time | 4 hours | 0.5 hours |
-| Labor Cost | $200 | $25 |
-| **Total** | **$200** | **$25** |
+| Labor Cost | Estimated | Estimated |
+| **Total** | **Higher** | **Lower** |
 
 ### Ongoing Maintenance (per month)
 
@@ -392,9 +394,7 @@ Pods with GPU get direct hardware access:
 | Config changes | 1 hour | 0.25 hours |
 | **Total** | **5 hours** | **1.75 hours** |
 
-**Monthly Savings**: 3.25 hours = $162.50/month
-
-**12-Month ROI**: $1,950 savings in labor
+**Monthly Savings**: ~3.25 hours of engineering time
 
 ---
 
@@ -439,6 +439,7 @@ Pods with GPU get direct hardware access:
 ## Revision History
 
 | Date | Author | Changes |
-|------|--------|---------|
+|------|---------|---------|
 | 2026-01-07 | Range | Initial decision record |
+| 2026-01-21 | Range | Update SuperPod migration path to B200 |
 
