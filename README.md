@@ -1,6 +1,6 @@
 # Enterprise AICC MLOps Platform: Strategic Reference Architecture
 
-**A production-ready, GitOps-driven Kubernetes MLOps framework designed for high-utilization GPU orchestration. Engineered for seamless transition from Micro-node Validation to Tier-4 Data Center SuperPod deployments (NVIDIA H200/B200/B300).**
+**A production-ready, GitOps-driven Kubernetes MLOps framework designed for high-utilization GPU orchestration. Engineered for seamless transition from Micro-node Validation to Tier-4 Data Center SuperPod deployments (NVIDIA B200 Blackwell architecture).**
 
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue)](https://opensource.org/licenses/bsd-3-clause)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-k3s-326CE5?logo=kubernetes)](https://k3s.io/)
@@ -20,7 +20,7 @@ As a **Micro-Architecture Validation (MAV)** implementation, this project demons
 * **Accelerated TTM (Time-to-Market):** Standardized GitOps workflows reduce cluster provisioning time from days to hours.
 * **Optimized TCO (Total Cost of Ownership):** High-density GPU utilization via NVIDIA time-slicing and multi-tenant resource quotas.
 * **Operational Excellence:** Zero-touch deployment cycles using declarative state management (ArgoCD).
-* **Future-Proof Scalability:** Architectural parity between the validation node and H200/B200/B300 SuperPod configurations.
+* **Future-Proof Scalability:** Architectural parity between the validation node and NVIDIA B200 SuperPod configurations.
 
 ## Architecture & Logic
 
@@ -71,7 +71,7 @@ For a detailed breakdown of the management-level technical decisions, refer to t
 | Feature | Validation Node (Current) | Commercial SuperPod (Target) |
 | --- | --- | --- |
 | **Compute** | Single-node x86 | Multi-node HA Cluster (99.99% SLA) |
-| **Accelerator** | NVIDIA Ampere/Ada | NVIDIA H200 / B200 / B300 NVLink |
+| **Accelerator** | NVIDIA Ampere/Ada | NVIDIA B200 Blackwell NVLink |
 | **Networking** | Standard Ethernet | InfiniBand / RDMA Fabric |
 | **Orchestration** | K3s (Embedded etcd) | Upstream K8s (External HA etcd) |
 | **Observability** | Per-GPU Tracking | Per-Tenant / Per-Project Billing & ROI |
@@ -81,7 +81,7 @@ For a detailed breakdown of the management-level technical decisions, refer to t
 The entire environment is bootstrapped via a single entry point, ensuring consistency across development, staging, and production tiers.
 
 ```bash
-git clone [https://github.com/gh-range/aicc-mlops-platform.git](https://github.com/gh-range/aicc-mlops-platform.git)
+git clone https://github.com/gh-range/aicc-mlops-platform.git
 cd aicc-mlops-platform
 ./scripts/setup/bootstrap.sh
 
@@ -91,10 +91,9 @@ cd aicc-mlops-platform
 
 * **Phase 1:** Core Infrastructure validation & GitOps workflow.
 * **Phase 2:** Transition to 3-node HA with distributed storage (Ceph/Longhorn).
-* **Phase 3:** Integration of NVIDIA Magnum IO & GPUDirect Storage for SuperPod scale.
+* **Phase 3:** Integration of NVIDIA Magnum IO & GPUDirect Storage for B200 SuperPod scale.
 * **Phase 4:** Implementation of commercial billing APIs and multi-region federation.
 
 ---
 
 **License:** BSD 3-Clause. Designed for commercial adaptability.
-
