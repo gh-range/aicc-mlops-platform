@@ -1,7 +1,7 @@
 # 12-Month Operating Plan: AI Data Center MLOps Platform
 
-**Version**: 0.1 
-**Date**: 2025-12-31  
+**Version**: 0.2 
+**Date**: 2026-01-21  
 **Owner**: AI Infrastructure Lead  
 **Review Cycle**: Quarterly
 
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This document outlines a 12-month roadmap to scale our single-node AI/ML platform into a production-grade, multi-node GPU cluster capable of serving 10-20 data scientists and ML engineers. The plan covers infrastructure expansion, team growth, budget allocation, and risk management.
+This document outlines a 12-month roadmap to scale our single-node AI/ML platform into a production-grade, multi-node GPU cluster capable of serving 10-20 data scientists and ML engineers. The plan covers infrastructure expansion, team growth, strategic budget allocation, and risk management.
 
 **Key Objectives:**
 - Scale from 1 node → 5 nodes (5x GPU capacity)
@@ -17,6 +17,9 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 - Establish 24/7 operational readiness
 - Implement cost-per-GPU-hour tracking
 - Build a 3-person infrastructure team
+
+**Strategic Vision:**
+This MAV (Micro-Architecture Validation) deployment serves as the technical foundation for large-scale commercial infrastructure. Validated patterns will scale to multi-rack NVIDIA B200 SuperPod environments (target: 128+ GPU deployment).
 
 ---
 
@@ -36,14 +39,14 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 
 ### Team
 
-- **Current**: 1 Infrastructure Engineer (#whoami)
+- **Current**: 1 Infrastructure Engineer
 - **Bottlenecks**: On-call burden, single point of failure
 
 ### Costs
 
-- **Capex**: $0 (In fact, I spent over USD$1050 in total to acquire the host and upgrade parts, but one SATA3 RAID card ended up unused.)
+- **Capex**: Initial hardware investment completed
 - **Opex**: 
-  - Electricity: ~$10/month (24/7 operation, in my location)
+  - Electricity: ~$10/month (24/7 operation, local rates)
   - Internet + DNS/SSL: $40/month
 **Total Monthly**: ~$50
 
@@ -53,21 +56,20 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 
 ### Goals
 
-- o Complete single-node platform (k3s, GPU Operator, monitoring)
-- o Deploy core ML services (JupyterHub, Ollama, training pipeline)
-- o Establish GitOps workflow (ArgoCD, CI/CD)
-- o Document all runbooks and disaster recovery procedures
+- Complete single-node platform (k3s, GPU Operator, monitoring)
+- Deploy core ML services (JupyterHub, Ollama, training pipeline)
+- Establish GitOps workflow (ArgoCD, CI/CD)
+- Document all runbooks and disaster recovery procedures
 
 ### Infrastructure Changes
 
-**Additions:**
-- 2.5Gbps network upgrade(NIC + Switch):
-- ISP upgrade(monthly):
-- UPS backup power(1kVA On-Line unit):
-- External NFS storage(4TB NAS):
+**Planned Additions:**
+- Network upgrade (2.5Gbps NIC + managed switch)
+- ISP bandwidth increase for remote access
+- UPS backup power (1kVA on-line unit for service continuity)
+- External NAS storage (4TB for distributed workloads)
 
-**Capex**: $
-**Opex**: +$x/month → $x+50/month total
+**Investment Approach**: Phased procurement based on validated requirements
 
 ### Team
 
@@ -101,22 +103,18 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 ### Infrastructure Changes
 
 **Node 2 Procurement:**
-- Hardware: ~$
-  - CPU: i9-12900 ($ )
-  - RAM: DDR5 128GB ($ )
-  - GPU: RTX A4000 16GB ($ )
-  - Motherboard + PSU + Case + Storage: $
+- Specification: Match or exceed Node 1 capabilities
+- Target: i9-12900 or equivalent, 128GB DDR5, RTX A4000 16GB
 - Setup time: 2 weeks (OS install, k3s join, validation)
 
-**Network:**
-- 2.5Gbps switch: $
+**Network Enhancement:**
+- Managed 2.5Gbps switch for node interconnect
 
-**Capex**: $
-**Opex**: +$20/month (electricity) → $ /month
+**Budget Allocation**: Strategic capex investment in Q2, exact amounts subject to market conditions and hardware availability
 
 ### Team
 
-- **Addition**: 1x DevOps Engineer (salary: $ /year = $ /month)
+- **Addition**: 1x DevOps Engineer
 - **Total team**: 2 engineers
 - **On-call rotation**: Established (1 week on, 1 week off)
 
@@ -130,7 +128,7 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 
 - Cluster uptime: >99.5%
 - GPU utilization: >70%
-- Cost per GPU-hour: <$0.50
+- Cost per GPU-hour: Market-competitive rates
 - Incident MTTR: <2 hours
 
 ---
@@ -147,22 +145,21 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 ### Infrastructure Changes
 
 **Node 3 Procurement:**
-- Hardware: $ (same spec as Node 2)
-- High-availability networking: $ (redundant switches)
+- Specification: Consistent with Node 2
+- High-availability networking: Redundant switch configuration
 
-**Software:**
-- S3-compatible object storage: MinIO cluster (open source, $0)
-- Container registry: Harbor (open source, $0)
+**Software Stack:**
+- S3-compatible object storage: MinIO cluster (open source)
+- Container registry: Harbor (open source)
 
-**Capex**: $ 
-**Opex**: +$30/month → $ /month
+**Investment Strategy**: Continue phased hardware acquisition aligned with user demand
 
 ### Team
 
-- **Addition**: 1x ML Platform Engineer (salary: $ /year = $ /month)
+- **Addition**: 1x ML Platform Engineer
 - **Total team**: 3 engineers
 - **Structure**:
-  - Infrastructure Lead (you): Strategy, architecture
+  - Infrastructure Lead: Strategy, architecture
   - DevOps Engineer: Operations, monitoring
   - ML Platform Engineer: Kubeflow, MLflow, user support
 
@@ -188,31 +185,30 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 - Add Nodes 4 & 5 (total 5x RTX A4000 = 80GB VRAM)
 - Implement enterprise features (LDAP, SSO, audit logs)
 - Prepare for SOC 2 compliance audit
-- Explore GPU rental revenue stream
+- Validate architecture for B200 SuperPod migration
 
 ### Infrastructure Changes
 
 **Nodes 4 & 5:**
-- Hardware: $ (2x $ )
+- Dual-node deployment for HA testing
 
 **Enterprise Enhancements:**
-- Backup solution: Velero + S3 storage ($20/month)
-- LDAP/Active Directory integration: FreeIPA (open source, $0)
-- Log aggregation: ELK stack (self-hosted, $0)
+- Backup solution: Velero + S3 storage
+- LDAP/Active Directory integration: FreeIPA (open source)
+- Log aggregation: ELK stack (self-hosted)
 
-**Capex**: $
-**Opex**: +$100/month (electricity + backup) → $ /month
+**Strategic Planning**: Finalize B200 SuperPod architecture based on MAV validation results
 
 ### Team
 
 - **Total**: 3 engineers (no additions)
-- **Focus**: Efficiency improvements, automation
+- **Focus**: Efficiency improvements, automation, SuperPod preparation
 
 ### Deliverables
 
 1. **Month 10**: Nodes 4 & 5 operational
 2. **Month 11**: Enterprise features (SSO, audit logs) live
-3. **Month 12**: SOC 2 readiness assessment complete
+3. **Month 12**: SOC 2 readiness assessment + B200 migration blueprint complete
 
 ### KPIs
 
@@ -226,37 +222,66 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 
 ## Budget Summary
 
-### Year 1 Total Investment
+### Year 1 Investment Framework
 
-| Category | Amount |
-|----------|--------|
-| **Capex (Hardware)** | $ |
-| - Initial setup | $ |
-| - Node 2 | $ |
-| - Node 3 | $ |
-| - Nodes 4 & 5 | $ |
-| **Opex (Monthly avg)** | $ /month × 12 = $ |
-| **Personnel (2 new hires)** | $ |
-| **Total Year 1 Cost** | **$ ** |
+| Category | Approach |
+|----------|----------|
+| **Capex (Hardware)** | Phased procurement aligned with validation milestones |
+| - Initial MAV setup | Completed |
+| - Nodes 2-5 expansion | Q2-Q4 strategic investment |
+| - Networking & UPS | Q1-Q2 reliability enhancement |
+| **Opex (Monthly)** | Incremental scaling from $50/month baseline |
+| **Personnel** | 2 new hires (competitive market rates) |
 
-### Cost per GPU-Hour Calculation
+**Financial Principles:**
+- Hardware costs subject to market volatility (RAM, SSD, GPU availability)
+- Exact budget finalized after MAV validation (Q1 completion)
+- ROI targets aligned with commercial SuperPod economics
 
-**Assumptions:**
+### Cost per GPU-Hour Projection
+
+**Methodology:**
 - 5 GPUs running 24/7 = 43,800 GPU-hours/year
-- Depreciation: 3-year hardware lifespan
+- 3-year hardware depreciation cycle
+- On-premise cost advantage vs. cloud (no egress fees, no vendor markup)
 
-**Breakdown:**
-- Hardware amortized: $16,600 / 3 years = $5,533/year
-- Opex: $2,820/year
-- **Infrastructure cost**: $8,353/year ÷ 43,800 hours = **$0.19/GPU-hour**
+**Target Economics:**
+- Infrastructure cost: Estimated sub-$0.20/GPU-hour (hardware only)
+- Fully-loaded cost: Market-competitive with cloud offerings
+- Break-even analysis: Updated post-MAV validation
 
-**With personnel costs included**:
-- Total: $1 /year ÷ 43,800 hours = **$ /GPU-hour**
-
-**Comparison to Cloud**:
+**Cloud Comparison Baseline:**
 - AWS p3.2xlarge (V100 16GB): $3.06/hour
 - Azure NC6s v3 (V100 16GB): $3.06/hour
-- **Our platform with A4000**: $ /hour (27% premium BUT on-premise, no egress fees)
+- GCP A2 (A100 40GB): $3.67/hour
+
+---
+
+## SuperPod Migration Strategy (128+ GPU Deployment)
+
+### Phase 1: MAV Validation (Current)
+- **Hardware**: RTX A4000 (5-node cluster)
+- **Purpose**: Validate orchestration, multi-tenancy, GitOps workflows
+- **Timeline**: Q1-Q4 2026
+
+### Phase 2: Pilot SuperPod (2027)
+- **Hardware**: NVIDIA B200 Blackwell architecture
+- **Scale**: 8-16 GPU initial deployment
+- **Infrastructure**: InfiniBand fabric, RDMA networking, NVLink
+- **Purpose**: Production workload migration, performance benchmarking
+
+### Phase 3: Full SuperPod Deployment (2027-2028)
+- **Target Scale**: 128+ NVIDIA B200 GPUs
+- **Architecture**: Multi-rack DGX SuperPod configuration
+- **Networking**: NVIDIA Quantum-2 InfiniBand (400Gbps per port)
+- **Storage**: GPUDirect Storage with NVMe-oF
+- **Economics**: Commercial GPU rental services, multi-tenant SaaS
+
+**Investment Timeline:**
+- Q4 2026: Finalize B200 SuperPod budget and procurement plan
+- Q1 2027: Data center site preparation and infrastructure
+- Q2-Q3 2027: Hardware procurement and deployment
+- Q4 2027: Production launch and commercial operations
 
 ---
 
@@ -265,40 +290,13 @@ This document outlines a 12-month roadmap to scale our single-node AI/ML platfor
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
 | **Hardware failure** | Medium | High | UPS, RAID, hot-spare components |
-| **Single point of failure (you)** | High | Critical | Hire team, document everything |
-| **Budget overrun** | Low | Medium | Phased approach, used hardware option |
+| **Single point of failure** | High | Critical | Hire team, document everything |
+| **Budget overrun** | Medium | Medium | Phased approach, market-tracking procurement |
+| **B200 availability constraints** | Medium | High | Early vendor engagement, flexible timelines |
 | **Slow user adoption** | Medium | Medium | Regular training, support docs |
 | **Security breach** | Low | High | NetworkPolicy, audit logs, patching |
 | **Power outage** | Low | High | UPS (4-hour runtime), generator (future) |
-| **Network bottleneck** | Medium | Medium | 10Gbps upgrade (Q1), monitoring |
-
----
-
-## Migration to Commercial Platform (Optional)
-
-### Scenario: GPU Rental Business
-
-If we wanted to commercialize this infrastructure:
-
-**Additional Requirements:**
-- Billing system: Open-source (e.g., Odoo) + Stripe integration
-- Multi-tenancy: Namespace isolation, ResourceQuotas
-- Self-service portal: Custom web app (Django/FastAPI)
-- Legal: Terms of service, SLA contracts
-
-**Estimated Setup Cost**: $ (development) + $ /month (Stripe fees, support)
-
-**Revenue Potential:**
-- Charge $2.50/GPU-hour (cloud parity with discount)
-- Break-even at: ~1,800 hours/month (10% utilization across 5 GPUs)
-- Profitable at: 50% utilization = $5,475/month revenue
-
-**12-Month Projection**:
-- Months 1-6: Build platform, $0 revenue
-- Months 7-12: Ramp to 30% utilization = $ /month avg
-- Year 2: Scale to 70% utilization = $ /month
-
-**ROI**: N months to break even on initial investment
+| **Network bottleneck** | Medium | Medium | 10Gbps upgrade planning, monitoring |
 
 ---
 
@@ -314,7 +312,7 @@ If we wanted to commercialize this infrastructure:
 ### Business Metrics
 
 - **Active Users**: 20+ (JupyterHub analytics)
-- **Cost per GPU-hour**: <$4.00 (internal chargeback)
+- **Cost per GPU-hour**: Market-competitive (internal chargeback)
 - **Team Satisfaction**: >4.2/5.0 (quarterly survey)
 - **Training Completed**: 80% of users (completion rate)
 
@@ -334,7 +332,7 @@ If we wanted to commercialize this infrastructure:
    - Identify bottlenecks
 
 2. **Week 2**: Budget reconciliation
-   - Update cost projections
+   - Update cost projections based on market conditions
    - Adjust hiring timeline if needed
 
 3. **Week 3**: Stakeholder presentation
@@ -348,26 +346,26 @@ If we wanted to commercialize this infrastructure:
 
 ---
 
-## Appendix: Vendor Comparison
+## Appendix: Build vs Buy Analysis
 
-### Build vs Buy Analysis
+### Strategy Comparison
 
-| Option | Year 1 Cost | Pros | Cons |
-|--------|-------------|------|------|
-| **Self-built (this plan)** | $  | Full control, learning, on-premise | Setup effort, team required |
-| **AWS SageMaker** | ~$240,000 | Managed, scalable | Vendor lock-in, egress costs |
-| **Run:ai (commercial)** | $50,000 license + $181,420 infra = $231,420 | Advanced scheduling | Extra cost, still need hardware |
-| **Lambda Labs GPU Cloud** | ~$180,000 (rental) | No capex | No customization, recurring cost |
+| Option | Approach | Advantage | Consideration |
+|--------|----------|-----------|---------------|
+| **Self-built (MAV → SuperPod)** | Phased validation | Full control, on-premise economics | Requires expertise, longer timeline |
+| **Cloud GPU (AWS/Azure/GCP)** | Rental model | Instant access, managed service | High recurring costs, egress fees |
+| **Commercial Platform (Run:ai, etc.)** | Licensed orchestration | Advanced scheduling | Additional licensing cost |
+| **Hybrid Model** | MAV validation + cloud burst | Risk mitigation | Complexity in multi-cloud management |
 
-**Conclusion**: RAM and SSD prices may have been high during 2006–2007, making it difficult to estimate the cost of certain components from 2006 at present.
+**Strategic Decision:** MAV validation reduces risk for large-scale SuperPod investment
 
 ---
 
 ## References
 
+- [NVIDIA B200 Platform Guide](https://www.nvidia.com/en-us/data-center/dgx-b200/)
 - [NVIDIA GPU TCO Calculator](https://www.nvidia.com/en-us/data-center/gpu-tco-calculator/)
 - [CNCF Cloud Native Maturity Model](https://maturitymodel.cncf.io/)
-- [Kubernetes Cost Estimation](https://www.kubecost.com/)
 
 ---
 
@@ -376,11 +374,13 @@ If we wanted to commercialize this infrastructure:
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
 | 2025-12-31 | 0.1 | Range | Initial 12-month plan |
+| 2026-01-21 | 0.2 | Range | Update B200 strategy, budget framework refinement |
 
 ---
 
 <div align="center">
 
 **This document should be reviewed and updated quarterly.**  
+**Budget specifics finalized post-MAV validation (Q1 2026 completion).**
 
 </div>
