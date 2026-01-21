@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gpu-test-a
+  labels:
+    purpose: gpu-time-slicing-validation
+    tenant: test-tenant-a
+    environment: testing
+  annotations:
+    description: "Multi-tenant GPU isolation test - Tenant A"
+    owner: "infrastructure-team"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gpu-test-b
+  labels:
+    purpose: gpu-time-slicing-validation
+    tenant: test-tenant-b
+    environment: testing
+  annotations:
+    description: "Multi-tenant GPU isolation test - Tenant B"
+    owner: "infrastructure-team"
