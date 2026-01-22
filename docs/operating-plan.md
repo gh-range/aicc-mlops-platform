@@ -1,371 +1,508 @@
-# 12-Month Operating Plan: AI Data Center MLOps Platform
+# Operating Plan: MAV to Commercial SuperPod
 
-**Version**: 0.2 
-**Date**: 2026-01-21  
-**Owner**: AI Infrastructure Lead  
+**Version**: 0.3
+**Date**: 2026-01-22  
+**Owner**: Infrastructure Architecture Team  
 **Review Cycle**: Quarterly
 
 ---
 
 ## Executive Summary
 
-This document outlines a 12-month roadmap to scale our single-node AI/ML platform into a production-grade, multi-node GPU cluster capable of serving 10-20 data scientists and ML engineers. The plan covers infrastructure expansion, team growth, strategic budget allocation, and risk management.
+This operating plan defines the strategic roadmap for scaling from a single-node Micro-Architecture Validation (MAV) platform to a commercial-grade 128-node NVIDIA B200 SuperPod serving GPU-as-a-Service customers or enterprise private cloud deployments.
 
-**Key Objectives:**
-- Scale from 1 node → 5 nodes (5x GPU capacity)
-- Support 5 concurrent users → 20 concurrent users
-- Establish 24/7 operational readiness
-- Implement cost-per-GPU-hour tracking
-- Build a 3-person infrastructure team
+**Strategic Approach**: Phased validation minimizes risk and capex exposure:
+1. **MAV Phase (6 months)**: Validate architecture patterns at zero licensing cost
+2. **HA Phase (6 months)**: Validate high availability and operational procedures
+3. **Commercial Phase (12-18 months)**: Deploy production infrastructure with revenue generation
 
-**Strategic Vision:**
-This MAV (Micro-Architecture Validation) deployment serves as the technical foundation for large-scale commercial infrastructure. Validated patterns will scale to multi-rack NVIDIA B200 SuperPod environments (target: 128+ GPU deployment).
-
----
-
-## Current State (Month 0)
-
-### Infrastructure
-
-| Component | Specification | Utilization |
-|-----------|---------------|-------------|
-| Nodes | 1x Ubuntu 24.04 | N/A |
-| CPU | i9-10900F (10C/20T) | ~30% average |
-| RAM | 128GB DDR4 | ~40GB used |
-| GPU | 1x RTX A4000 16GB | ~60% utilization |
-| Storage1 | 1TB M.2 SSD | 200GB used |
-| Storage2 | 2TB RAID 10 SSD | 800GB used |
-| Network | 1Gbps | ~100Mbps peak |
-
-### Team
-
-- **Current**: 1 Infrastructure Engineer
-- **Bottlenecks**: On-call burden, single point of failure
-
-### Costs
-
-- **Capex**: Initial hardware investment completed
-- **Opex**: 
-  - Electricity: ~$10/month (24/7 operation, local rates)
-  - Internet + DNS/SSL: $40/month
-**Total Monthly**: ~$50
+**Target Economics**:
+- Break-even: 18 months post-commercial launch
+- Revenue target: $2-4M/month at 80% GPU utilization
+- TCO advantage: 40-50% lower than hyperscaler pricing (see ADR-005)
 
 ---
 
-## Q1 2026 (Months 1-3): Foundation
+## Current State (Phase 1: MAV)
 
-### Goals
+### Infrastructure Snapshot
 
-- Complete single-node platform (k3s, GPU Operator, monitoring)
-- Deploy core ML services (JupyterHub, Ollama, training pipeline)
-- Establish GitOps workflow (ArgoCD, CI/CD)
-- Document all runbooks and disaster recovery procedures
+| Component | Specification | Status |
+|-----------|---------------|--------|
+| **Nodes** | 1 (llm1) | Operational |
+| **CPU** | i9-10900F (10C/20T) | ~30% average utilization |
+| **RAM** | 128GB DDR4 | ~40GB used |
+| **GPU** | 1x RTX A4000 16GB (4 virtual via time-slicing) | ~60% utilization |
+| **Storage** | 1TB NVMe + 2TB RAID10 SSD | 1TB used |
+| **Network** | 1Gbps Ethernet | ~100Mbps peak |
+| **OS** | Ubuntu 24.04 LTS | Zabbix monitoring active |
 
-### Infrastructure Changes
+### Team Structure
 
-**Planned Additions:**
-- Network upgrade (2.5Gbps NIC + managed switch)
-- ISP bandwidth increase for remote access
-- UPS backup power (1kVA on-line unit for service continuity)
-- External NAS storage (4TB for distributed workloads)
+- **Current**: 1 Infrastructure Engineer (full-stack)
+- **On-call**: Not formalized (single-person team)
+- **Knowledge Transfer**: Documentation-driven (runbooks, ADRs)
 
-**Investment Approach**: Phased procurement based on validated requirements
+### Monthly Operating Costs
 
-### Team
+| Category | Cost |
+|----------|------|
+| Electricity (24/7) | ~$10 |
+| Internet + DNS/SSL | $40 |
+| **Total** | **$50/month** |
 
-- **Current**: 1 engineer
-- **Action**: Begin recruiting for DevOps Engineer (start Month 3)
-
-### Deliverables
-
-1. **Week 4**: Production k3s cluster with GPU support
-2. **Week 8**: All ML services operational
-3. **Week 12**: Complete documentation + disaster recovery tested
-
-### KPIs
-
-- Platform uptime: >99% (max 7 hours downtime)
-- GPU utilization: >60%
-- User satisfaction: >4.0/5.0 (survey)
-- Documentation coverage: 100% of critical systems
+**Hardware Capex**: Initial investment completed (estimated <$5K total including upgrades)
 
 ---
 
-## Q2 2026 (Months 4-6): Team Building
+## Phase 1: Micro-Architecture Validation (Current)
 
-### Goals
+**Timeline**: Month 1-6 (Q1-Q2 2026)  
+**Status**: 60% complete
 
-- Hire DevOps Engineer
-- Add 2nd GPU node (identical to first)
-- Implement advanced monitoring (cost tracking, chargeback)
-- Launch internal "GPU-as-a-Service" for other departments
+### Objectives
 
-### Infrastructure Changes
+- [o] Validate GPU Time-Slicing for multi-tenancy
+- [o] Validate ResourceQuota enforcement
+- [o] Integrate JupyterHub with GPU allocation
+- [ ] Complete GitOps workflow (ArgoCD ApplicationSets)
+- [ ] Implement disaster recovery (Velero)
+- [ ] Production-grade monitoring (Prometheus + Grafana dashboards)
+- [ ] Document all operational runbooks
 
-**Node 2 Procurement:**
-- Specification: Match or exceed Node 1 capabilities
-- Target: i9-12900 or equivalent, 128GB DDR5, RTX A4000 16GB
-- Setup time: 2 weeks (OS install, k3s join, validation)
+### Key Deliverables
 
-**Network Enhancement:**
-- Managed 2.5Gbps switch for node interconnect
+**Week 1-4** (Complete):
+- k3s cluster with GPU Operator
+- Time-Slicing configuration (1 → 4 virtual GPUs)
+- Multi-tenant namespaces with ResourceQuotas
 
-**Budget Allocation**: Strategic capex investment in Q2, exact amounts subject to market conditions and hardware availability
+**Week 5-8** (In Progress):
+- JupyterHub deployment (GitHub OAuth)
+- DCGM metrics integration
+- ArgoCD installation
 
-### Team
+**Week 9-12** (Planned):
+- Velero backup/restore testing
+- Complete monitoring stack
+- Operational runbook finalization
 
-- **Addition**: 1x DevOps Engineer
-- **Total team**: 2 engineers
-- **On-call rotation**: Established (1 week on, 1 week off)
+**Week 13-24** (Extended Validation):
+- 30-day uptime test (target: 99%+)
+- Load testing (sustained 60%+ GPU utilization)
+- Documentation review and ADR finalization
 
-### Deliverables
+### Success Metrics
 
-1. **Month 4**: DevOps Engineer onboarded
-2. **Month 5**: Node 2 operational, multi-node tested
-3. **Month 6**: Cost tracking dashboard launched
+| Metric | Target | Current |
+|--------|--------|---------|
+| GPU Utilization | >60% | ~60% |
+| Platform Uptime | >99% | TBD (monitoring setup) |
+| Documentation Coverage | 100% | ~70% |
+| Team Onboarding Time | <3 days | N/A (single engineer) |
 
-### KPIs
+### Investment Summary
 
-- Cluster uptime: >99.5%
-- GPU utilization: >70%
-- Cost per GPU-hour: Market-competitive rates
-- Incident MTTR: <2 hours
+- **Capex**: $0 (hardware already procured)
+- **Opex**: $50/month
+- **Personnel**: 1 FTE (existing)
+- **Software Licensing**: $0 (open-source stack)
 
----
+**Total Phase 1 Cost**: ~$300 opex + existing salary
 
-## Q3 2026 (Months 7-9): Scalability
+### Decision Gate (Month 6)
 
-### Goals
-
-- Add Node 3 (total 3x RTX A4000)
-- Deploy Kubeflow for ML pipelines
-- Implement model registry (MLflow)
-- Support 15 concurrent users
-
-### Infrastructure Changes
-
-**Node 3 Procurement:**
-- Specification: Consistent with Node 2
-- High-availability networking: Redundant switch configuration
-
-**Software Stack:**
-- S3-compatible object storage: MinIO cluster (open source)
-- Container registry: Harbor (open source)
-
-**Investment Strategy**: Continue phased hardware acquisition aligned with user demand
-
-### Team
-
-- **Addition**: 1x ML Platform Engineer
-- **Total team**: 3 engineers
-- **Structure**:
-  - Infrastructure Lead: Strategy, architecture
-  - DevOps Engineer: Operations, monitoring
-  - ML Platform Engineer: Kubeflow, MLflow, user support
-
-### Deliverables
-
-1. **Month 7**: Node 3 operational
-2. **Month 8**: Kubeflow deployed, first pipeline running
-3. **Month 9**: MLflow model registry integrated
-
-### KPIs
-
-- Cluster uptime: >99.7%
-- GPU utilization: >75%
-- Active users: 15+
-- Model deployment time: <10 minutes (registry → inference)
+**Proceed to Phase 2 if**:
+- All technical validation complete (>90% checklist)
+- Team bandwidth available (or hire plan approved)
+- Budget allocation secured for HA hardware ($30-50K)
 
 ---
 
-## Q4 2026 (Months 10-12): Productionization
+## Phase 2: High-Availability Validation
 
-### Goals
+**Timeline**: Month 7-12 (Q3-Q4 2026)  
+**Status**: Planned
 
-- Add Nodes 4 & 5 (total 5x RTX A4000 = 80GB VRAM)
-- Implement enterprise features (LDAP, SSO, audit logs)
-- Prepare for SOC 2 compliance audit
-- Validate architecture for B200 SuperPod migration
+### Objectives
 
-### Infrastructure Changes
+- Deploy 3-node k3s HA cluster
+- Validate control plane failover (<30s)
+- Implement distributed storage (Longhorn)
+- Custom fair-share scheduler or Volcano adoption
+- 7-day sustained load test (80%+ GPU utilization)
+- Finalize commercial platform decision (Run:AI vs custom)
 
-**Nodes 4 & 5:**
-- Dual-node deployment for HA testing
+### Infrastructure Expansion
 
-**Enterprise Enhancements:**
-- Backup solution: Velero + S3 storage
-- LDAP/Active Directory integration: FreeIPA (open source)
-- Log aggregation: ELK stack (self-hosted)
+**New Hardware**:
+- 2 additional nodes (specifications matching or exceeding Node 1)
+- 10Gbps network switch (for storage replication)
+- UPS backup power (1kVA on-line unit per node)
+- NAS for centralized backups (4TB+)
 
-**Strategic Planning**: Finalize B200 SuperPod architecture based on MAV validation results
+**Software Additions**:
+- Longhorn distributed storage
+- MetalLB for load balancer VIP
+- Thanos for long-term Prometheus storage
+- Volcano scheduler (CNCF) or custom development
 
-### Team
+**Estimated Capex**: $30-50K (hardware + networking)  
+**Estimated Opex**: +$30/month (electricity, ISP upgrade)
 
-- **Total**: 3 engineers (no additions)
-- **Focus**: Efficiency improvements, automation, SuperPod preparation
+### Team Expansion
 
-### Deliverables
+**Hiring Plan**:
+- **Month 7**: Post job opening for DevOps Engineer
+- **Month 8-9**: Interview and onboarding (4-week process)
+- **Month 10**: Second engineer productive on HA deployment
 
-1. **Month 10**: Nodes 4 & 5 operational
-2. **Month 11**: Enterprise features (SSO, audit logs) live
-3. **Month 12**: SOC 2 readiness assessment + B200 migration blueprint complete
+**Team Structure (Post-Hire)**:
+- Infrastructure Lead: Strategy, architecture, Phase 3 planning
+- DevOps Engineer: HA cluster operations, monitoring, on-call rotation
 
-### KPIs
+**Personnel Cost**: +$120-150K annual salary (prorated for 6 months)
 
-- Cluster uptime: >99.9% (SLA-grade)
-- GPU utilization: >80%
-- Active users: 20+
-- Security incidents: 0
-- Compliance readiness: 90%+
+### Key Deliverables
 
----
+**Month 7**:
+- Hardware procurement and setup
+- 3-node k3s cluster deployed
+- Control plane HA validated
 
-## Budget Summary
+**Month 8-9**:
+- Longhorn storage tested (failover, data integrity)
+- Scheduler implementation (Volcano or custom)
+- New engineer onboarded
 
-### Year 1 Investment Framework
+**Month 10-11**:
+- 7-day load test (80%+ GPU utilization)
+- Chaos engineering (inject failures, validate recovery)
+- Commercial platform evaluation (Run:AI demo, cost analysis)
 
-| Category | Approach |
-|----------|----------|
-| **Capex (Hardware)** | Phased procurement aligned with validation milestones |
-| - Initial MAV setup | Completed |
-| - Nodes 2-5 expansion | Q2-Q4 strategic investment |
-| - Networking & UPS | Q1-Q2 reliability enhancement |
-| **Opex (Monthly)** | Incremental scaling from $50/month baseline |
-| **Personnel** | 2 new hires (competitive market rates) |
+**Month 12**:
+- Phase 2 validation report
+- Phase 3 business case presentation
+- ADR-006: Final platform selection (Run:AI vs custom vs hybrid)
 
-**Financial Principles:**
-- Hardware costs subject to market volatility (RAM, SSD, GPU availability)
-- Exact budget finalized after MAV validation (Q1 completion)
-- ROI targets aligned with commercial SuperPod economics
+### Success Metrics
 
-### Cost per GPU-Hour Projection
+| Metric | Target |
+|--------|--------|
+| HA Uptime | >99.5% (max 3.6 hours downtime/month) |
+| Failover Time | <30 seconds (pod rescheduling) |
+| GPU Utilization | >75% (sustained over 7 days) |
+| Storage Replication | 100% data integrity after failover |
+| Team Redundancy | 2 engineers both on-call capable |
 
-**Methodology:**
-- 5 GPUs running 24/7 = 43,800 GPU-hours/year
-- 3-year hardware depreciation cycle
-- On-premise cost advantage vs. cloud (no egress fees, no vendor markup)
+### Investment Summary
 
-**Target Economics:**
-- Infrastructure cost: Estimated sub-$0.20/GPU-hour (hardware only)
-- Fully-loaded cost: Market-competitive with cloud offerings
-- Break-even analysis: Updated post-MAV validation
+- **Capex**: $30-50K (hardware)
+- **Opex**: $80/month ($50 + $30 expansion)
+- **Personnel**: 2 FTE (1 new hire)
+- **Total Phase 2 Cost**: ~$90-110K (capex + 6 months opex + prorated salary)
 
-**Cloud Comparison Baseline:**
-- AWS p3.2xlarge (V100 16GB): $3.06/hour
-- Azure NC6s v3 (V100 16GB): $3.06/hour
-- GCP A2 (A100 40GB): $3.67/hour
+### Decision Gate (Month 12)
 
----
-
-## SuperPod Migration Strategy (128+ GPU Deployment)
-
-### Phase 1: MAV Validation (Current)
-- **Hardware**: RTX A4000 (5-node cluster)
-- **Purpose**: Validate orchestration, multi-tenancy, GitOps workflows
-- **Timeline**: Q1-Q4 2026
-
-### Phase 2: Pilot SuperPod (2027)
-- **Hardware**: NVIDIA B200 Blackwell architecture
-- **Scale**: 8-16 GPU initial deployment
-- **Infrastructure**: InfiniBand fabric, RDMA networking, NVLink
-- **Purpose**: Production workload migration, performance benchmarking
-
-### Phase 3: Full SuperPod Deployment (2027-2028)
-- **Target Scale**: 128+ NVIDIA B200 GPUs
-- **Architecture**: Multi-rack DGX SuperPod configuration
-- **Networking**: NVIDIA Quantum-2 InfiniBand (400Gbps per port)
-- **Storage**: GPUDirect Storage with NVMe-oF
-- **Economics**: Commercial GPU rental services, multi-tenant SaaS
-
-**Investment Timeline:**
-- Q4 2026: Finalize B200 SuperPod budget and procurement plan
-- Q1 2027: Data center site preparation and infrastructure
-- Q2-Q3 2027: Hardware procurement and deployment
-- Q4 2027: Production launch and commercial operations
+**Proceed to Phase 3 if**:
+- HA validation successful (all metrics met)
+- Commercial platform decision finalized (ADR-006 approved)
+- Phase 3 funding secured (estimated $8-15M capex)
+- Data center site selection complete
 
 ---
 
-## Risk Matrix
+## Phase 3: Commercial SuperPod Deployment
+
+**Timeline**: Month 13-30 (2027-2028, 18 months)  
+**Status**: Planning
+
+### Objectives
+
+- Deploy 128-node NVIDIA B200 SuperPod (1024+ GPUs)
+- Achieve 99.99% SLA (max 52 minutes downtime/year)
+- Launch GPU-as-a-Service commercial platform
+- Onboard 10+ enterprise customers
+- Reach break-even within 18 months of launch
+
+### Infrastructure Scale
+
+**Target Cluster**:
+- **Nodes**: 128 (DGX B200 or equivalent)
+- **GPUs**: 1024 (8 per node, 180GB HBM3e each)
+- **CPU**: 32,768 cores (AMD EPYC Genoa)
+- **RAM**: 16 TB total
+- **Storage**: 3.84 PB NVMe (GPUDirect Storage)
+- **Network**: InfiniBand NDR (400Gbps per node)
+
+**Data Center Requirements**:
+- Power: 1.5-2.0 MW (15kW per node)
+- Cooling: Liquid-to-chip or rear-door heat exchangers
+- Space: 2000+ sq ft raised floor
+- Connectivity: 100Gbps redundant internet uplinks
+
+**Software Platform** (Decision at Phase 2 completion):
+- Orchestration: Kubernetes (standard distribution or RKE2)
+- GPU Management: GPU Operator with MIG profiles
+- Commercial Platform: Run:AI, custom, or hybrid (see ADR-005)
+- Billing: Custom integration (Stripe, Chargebee, or enterprise CRM)
+
+### Deployment Timeline
+
+**Months 13-15: Planning & Procurement**
+- Data center site selection (colocation vs on-premise)
+- B200 GPU pre-order (12-18 month lead time)
+- InfiniBand fabric design (NVIDIA Quantum-2 switches)
+- Hire core team (SREs, network engineers, customer support)
+
+**Months 16-18: Infrastructure Build**
+- Data center power/cooling installation
+- InfiniBand fabric deployment
+- Hardware staging and burn-in testing
+
+**Months 19-21: Software Deployment**
+- Kubernetes cluster bootstrap
+- GPU Operator with MIG configuration
+- Commercial billing system integration
+- Security hardening (Zero-Trust, compliance audits)
+
+**Months 22-24: Customer Onboarding**
+- Beta customer program (10% capacity)
+- SLA validation (99.99% uptime testing)
+- Monitoring and alerting tuning
+
+**Months 25-30: Revenue Ramp**
+- General availability launch
+- Target: 50% utilization by Month 27
+- Target: 80% utilization by Month 30 (break-even)
+
+### Team Structure (Full Commercial Team)
+
+**Infrastructure (5 FTE)**:
+- SRE Lead (on-call coordinator)
+- 2x Platform Engineers (Kubernetes, GPU Operator)
+- 2x Network Engineers (InfiniBand, BGP)
+
+**Customer Success (3 FTE)**:
+- Support Lead
+- 2x Customer Success Engineers (24/7 rotation)
+
+**Security & Compliance (2 FTE)**:
+- Security Engineer (pen testing, Zero-Trust)
+- Compliance Officer (SOC 2, GDPR)
+
+**Business Development (2 FTE)** (not included in technical team budget):
+- Sales Engineer
+- Account Manager
+
+**Total Technical Team**: 10 FTE
+
+### Revenue Model
+
+**Pricing Tiers**:
+
+| Tier | Product | Price | Target Market |
+|------|---------|-------|---------------|
+| **On-Demand** | B200 MIG (1/7 GPU) | $3.50/hour | Startups, research |
+| **On-Demand** | B200 Full GPU | $28/hour | Production workloads |
+| **Reserved 1-year** | 20% discount | $2.80/hour | Enterprise batch jobs |
+| **Reserved 3-year** | 30% discount | $2.45/hour | Fortune 500 |
+| **Spot** | Dynamic pricing | $1.50-2.50/hour | Fault-tolerant workloads |
+
+**Utilization Targets**:
+- Month 1-6: 30% (beta customers)
+- Month 7-12: 50% (general availability)
+- Month 13-18: 80% (break-even, profitability)
+
+**Revenue Projections** (80% utilization, average $2.50/hour):
+- 1024 GPUs × 0.80 × 730 hours/month × $2.50 = **$1.49M/month**
+- Annual revenue: **$17.9M/year**
+
+**Break-Even Analysis**:
+- Annual costs: ~$8-10M (hardware amortization + opex + personnel)
+- Break-even: 50-55% utilization sustained
+- Target margin: 40-50% at 80% utilization
+
+### Investment Summary
+
+**Phase 3 Capex** (one-time):
+- Hardware (128 DGX B200): $8-12M (estimated $70-90K per node)
+- InfiniBand fabric: $1-2M
+- Data center build-out: $500K-1M (if on-premise)
+- Professional services (deployment): $200K
+- **Total Capex**: **$10-15M**
+
+**Phase 3 Opex** (annual):
+- Data center costs: $1.5-2M/year (power, cooling, space)
+- Internet connectivity: $150K/year (100Gbps)
+- Software licensing: $0-3.8M/year (if Run:AI, see ADR-005)
+- Maintenance contracts: $500K/year (NVIDIA support)
+- **Total Opex**: **$2.2-6.5M/year** (depends on platform choice)
+
+**Phase 3 Personnel** (annual):
+- 10 FTE × $120-150K average = **$1.2-1.5M/year**
+
+**Total Year 1 Cost**: $10-15M capex + $3.4-8M opex = **$13.4-23M**
+
+**Funding Strategy**:
+- Venture capital or private equity (50-70% of capex)
+- Pre-sales commitments (enterprise customers, 20-30%)
+- Retained earnings or line of credit (10-20%)
+
+### Success Metrics
+
+**Technical**:
+- 99.99% uptime (SLA compliance)
+- GPU utilization >80%
+- Mean time to resolution (MTTR) <1 hour
+- Zero security incidents
+
+**Business**:
+- 10+ enterprise customers signed
+- $1.5M+ monthly recurring revenue
+- Customer churn <10% annually
+- Net Promoter Score (NPS) >50
+
+**Operational**:
+- On-call incident load <5 per week
+- Automated resolution rate >70%
+- Documentation coverage 100%
+- Employee retention >90%
+
+---
+
+## Risk Management
+
+### Phase 1 Risks (MAV)
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| **Hardware failure** | Medium | High | UPS, RAID, hot-spare components |
-| **Single point of failure** | High | Critical | Hire team, document everything |
-| **Budget overrun** | Medium | Medium | Phased approach, market-tracking procurement |
-| **B200 availability constraints** | Medium | High | Early vendor engagement, flexible timelines |
-| **Slow user adoption** | Medium | Medium | Regular training, support docs |
-| **Security breach** | Low | High | NetworkPolicy, audit logs, patching |
-| **Power outage** | Low | High | UPS (4-hour runtime), generator (future) |
-| **Network bottleneck** | Medium | Medium | 10Gbps upgrade planning, monitoring |
+| Single engineer burnout | Medium | High | Document everything, flexible timeline |
+| Hardware failure (no redundancy) | Low | Medium | Cloud backup (offsite Velero snapshots) |
+| Budget constraints for Phase 2 | Low | High | Demonstrate clear ROI, seek early funding approval |
 
----
+### Phase 2 Risks (HA)
 
-## Success Metrics Dashboard
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| Hiring delays | Medium | Medium | Start recruitment early (Month 7) |
+| k3s performance issues | Low | Medium | Validate at 3-node scale; fallback to k8s if needed |
+| HA complexity underestimated | Medium | High | Allocate 4 months instead of 3 for testing |
 
-### Technical Metrics
+### Phase 3 Risks (Commercial)
 
-- **Uptime**: 99.9% (track via Prometheus)
-- **GPU Utilization**: 80% average (DCGM Exporter)
-- **Job Queue Time**: <5 minutes (Kubernetes metrics)
-- **Incident MTTR**: <1 hour (PagerDuty)
-
-### Business Metrics
-
-- **Active Users**: 20+ (JupyterHub analytics)
-- **Cost per GPU-hour**: Market-competitive (internal chargeback)
-- **Team Satisfaction**: >4.2/5.0 (quarterly survey)
-- **Training Completed**: 80% of users (completion rate)
-
-### Operational Metrics
-
-- **Documentation Coverage**: 100% (runbook checklist)
-- **Backup Success Rate**: 100% (daily verification)
-- **Patch Compliance**: <7 days for critical CVEs
-- **Change Failure Rate**: <5% (post-deployment issues)
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| B200 GPU shortage | High | Critical | Pre-order 12+ months ahead, dual-source (H200 fallback) |
+| Funding shortfall | Medium | Critical | Secure commitments early, phased deployment (64 nodes → 128 nodes) |
+| Customer acquisition slower than projected | Medium | High | Pre-sales during Phase 2, incentivize early adopters |
+| Run:AI pricing increases | Medium | Medium | Negotiate multi-year contract with price cap |
+| Data center delays | Medium | High | Select colocation (faster than on-premise build) |
+| Security breach | Low | Critical | Zero-Trust architecture, quarterly pen tests, bug bounty |
 
 ---
 
 ## Quarterly Review Process
 
-1. **Week 1 of Quarter**: Metrics review meeting
-   - Compare actuals vs targets
-   - Identify bottlenecks
+### Review Cadence
 
-2. **Week 2**: Budget reconciliation
-   - Update cost projections based on market conditions
-   - Adjust hiring timeline if needed
+**Month 3, 6, 9, 12** (and quarterly thereafter):
+
+1. **Week 1**: Metrics review meeting
+   - Compare actuals vs targets
+   - Identify bottlenecks and risks
+
+2. **Week 2**: Financial reconciliation
+   - Budget vs actual spending
+   - Revenue projections (Phase 3 only)
 
 3. **Week 3**: Stakeholder presentation
-   - Executive summary slides (see `docs/executive-summaries/`)
-   - ROI demonstration
-   - Next quarter priorities
+   - Executive summary deck
+   - Go/no-go decision for next phase
 
 4. **Week 4**: Plan adjustments
-   - Update this document
-   - Commit to Git (version control)
+   - Update operating plan (version control)
+   - Revise ADRs if strategy changes
+
+### Key Performance Indicators (KPIs)
+
+**Technical KPIs**:
+- Platform uptime %
+- GPU utilization %
+- Incident MTTR
+- Deployment frequency (GitOps velocity)
+
+**Business KPIs**:
+- Revenue (Phase 3 only)
+- Customer acquisition cost (CAC)
+- Customer lifetime value (LTV)
+- Burn rate vs runway
+
+**Operational KPIs**:
+- Team satisfaction (quarterly survey)
+- On-call load (incidents per week)
+- Documentation coverage %
+- Hiring pipeline health
 
 ---
 
-## Appendix: Build vs Buy Analysis
+## Competitive Analysis
 
-### Strategy Comparison
+### Build vs Buy vs Rent
 
-| Option | Approach | Advantage | Consideration |
-|--------|----------|-----------|---------------|
-| **Self-built (MAV → SuperPod)** | Phased validation | Full control, on-premise economics | Requires expertise, longer timeline |
-| **Cloud GPU (AWS/Azure/GCP)** | Rental model | Instant access, managed service | High recurring costs, egress fees |
-| **Commercial Platform (Run:ai, etc.)** | Licensed orchestration | Advanced scheduling | Additional licensing cost |
-| **Hybrid Model** | MAV validation + cloud burst | Risk mitigation | Complexity in multi-cloud management |
+| Option | Year 1 Cost | Year 3 Cost | Control | Flexibility |
+|--------|-------------|-------------|---------|-------------|
+| **Self-Built (this plan)** | $13-23M | $20-40M | Full | Maximum |
+| **AWS/Azure GPU Rental** | $32M | $96M | Minimal | High (pay-as-go) |
+| **Run:AI + Cloud** | $35M | $100M | Medium | Medium |
+| **Managed Service (CoreWeave)** | $28M | $84M | Low | High |
 
-**Strategic Decision:** MAV validation reduces risk for large-scale SuperPod investment
+**Assumptions**: 1024 GPUs, 80% utilization, 3-year horizon
+
+**Conclusion**: Self-built approach achieves 40-50% TCO savings at commercial scale, justifying upfront investment.
+
+### Market Positioning
+
+**Target Segment**: Mid-market AI companies and enterprise private cloud
+
+**Competitive Advantages**:
+- **Price**: 15-25% below hyperscaler on-demand rates
+- **Performance**: InfiniBand fabric (vs cloud TCP/IP)
+- **Data Sovereignty**: On-premise option for regulated industries
+- **Support**: Dedicated customer success engineers
+
+**Competitive Disadvantages**:
+- **Scale**: Cannot match hyperscaler global footprint
+- **Elasticity**: Fixed capacity (must pre-provision)
+- **Brand**: Unknown vs AWS/Azure/GCP
+
+**Mitigation**:
+- Partner with cloud providers (hybrid model: burst to cloud)
+- Focus on niche markets (finance, healthcare, government)
+- Build reputation through case studies and whitepapers
 
 ---
 
-## References
+## Appendix: Phased Procurement Strategy
 
-- [NVIDIA B200 Platform Guide](https://www.nvidia.com/en-us/data-center/dgx-b200/)
-- [NVIDIA GPU TCO Calculator](https://www.nvidia.com/en-us/data-center/gpu-tco-calculator/)
-- [CNCF Cloud Native Maturity Model](https://maturitymodel.cncf.io/)
+### Phase 1 (Complete)
+- $0 new investment (existing hardware)
+
+### Phase 2 (Q3-Q4 2026)
+- **Month 7**: RFQ for 2 nodes + networking
+- **Month 8**: Purchase order, 4-6 week lead time
+- **Month 9**: Hardware arrival, deployment
+
+### Phase 3 (2027-2028)
+- **Month 13**: Data center site selection finalized
+- **Month 14**: B200 GPU pre-order (NVIDIA Enterprise Alliance)
+- **Month 15**: InfiniBand fabric procurement
+- **Month 16-18**: Hardware staging, phased deployment
+  - Stage 1: 32 nodes (2 racks)
+  - Stage 2: 64 nodes (4 racks)
+  - Stage 3: 128 nodes (8 racks)
+
+**Risk Mitigation**: Phased deployment reduces cash flow pressure and allows early revenue generation from partial capacity.
 
 ---
 
@@ -374,13 +511,18 @@ This MAV (Micro-Architecture Validation) deployment serves as the technical foun
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
 | 2025-12-31 | 0.1 | Range | Initial 12-month plan |
-| 2026-01-21 | 0.2 | Range | Update B200 strategy, budget framework refinement |
+| 2026-01-21 | 0.2 | Range | Budget refinement, B200 strategy |
+| 2026-01-22 | 0.3 | Range | Complete rewrite: 3-phase roadmap (MAV → HA → SuperPod) |
 
 ---
 
 <div align="center">
 
-**This document should be reviewed and updated quarterly.**  
-**Budget specifics finalized post-MAV validation (Q1 2026 completion).**
+**Next Review**: 2026-04-22 (Q1 completion checkpoint)  
+**Decision Gate**: 2026-07-01 (Phase 2 go/no-go)  
+**Commercial Launch Target**: Q1 2027
+
+**For detailed technical specifications, see [Scaling Roadmap](architecture/scaling-roadmap.md)**
 
 </div>
+
