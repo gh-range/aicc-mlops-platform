@@ -1,0 +1,58 @@
+# Traefik Helm Chart Values
+# Chart Version: 38.0.2
+# App Version: v3.6.6
+# Last Updated: 2026-01-22
+
+# --------------------------------------------------
+# Global Configuration
+# --------------------------------------------------
+global:
+  systemDefaultRegistry: ""
+
+# --------------------------------------------------
+# Deployment Configuration
+# (Will be configured later)
+# --------------------------------------------------
+deployment:
+  enabled: true
+  kind: DaemonSet  # or Deployment
+  replicas: 1
+
+# --------------------------------------------------
+# Service Configuration
+# (Will be configured later)
+# --------------------------------------------------
+service:
+  enabled: true
+  type: ClusterIP  # HostPort mode uses ClusterIP
+
+# --------------------------------------------------
+# Ports Configuration
+# --------------------------------------------------
+ports:
+  web:
+    port: 8000
+    expose:
+      default: true
+    exposedPort: 80
+  websecure:
+    port: 8443
+    expose:
+      default: true
+    exposedPort: 443
+
+# --------------------------------------------------
+# Resource Limits
+# --------------------------------------------------
+resources:
+  requests:
+    cpu: "500m"
+    memory: 1G
+  limits:
+    cpu: "2"
+    memory: 4G
+
+# --------------------------------------------------
+# Additional Configuration
+# (To be completed later)
+# --------------------------------------------------
