@@ -1,0 +1,24 @@
+# Traefik Chart 38.0.2 Compatibility Verification
+Date: 2026/01/22
+
+## Helm Version
+v3.19.4+
+
+## Kubernetes Version
+Client Version: v1.34.3
+Kustomize Version: v5.7.1
+Server Version: v1.34.3
+
+## Repository Status
+traefik                 https://traefik.github.io/charts
+
+## Target Chart
+traefik/traefik 38.0.2          v3.6.6          A Traefik based Kubernetes ingress controller
+
+## System Status
+Node: llm1
+OS: Ubuntu 24.04 LTS
+k3s: v1.34.3
+
+Status: [o] Compatible
+
