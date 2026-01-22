@@ -1,49 +1,162 @@
-# Traefik Helm Chart Values
-# Chart Version: 38.0.2
+# Traefik Production Values for AICC MLOps Platform
+# Chart: traefik/traefik 38.0.2
 # App Version: v3.6.6
+# Environment: MAV (Micro-Architecture Validation) Node
 # Last Updated: 2026-01-22
 
-# --------------------------------------------------
+# ==============================================================================
 # Global Configuration
-# --------------------------------------------------
+# ==============================================================================
 global:
   systemDefaultRegistry: ""
 
-# --------------------------------------------------
-# Deployment Configuration
-# (Will be configured later)
-# --------------------------------------------------
+# ==============================================================================
+# Image Configuration
+# ==============================================================================
+image:
+  registry: docker.io
+  repository: traefik
+  tag: "v3.6.6"
+  pullPolicy: IfNotPresent
+
+# ==============================================================================
+# Deployment Architecture
+# Decision: DaemonSet for HA guarantee on single-node MAV
+# Rationale: Ensures Ingress capability survives node restarts
+# Future: Auto-scales to all nodes in SuperPod without config changes
+# ==============================================================================
 deployment:
   enabled: true
-  kind: DaemonSet  # or Deployment
-  replicas: 1
+  kind: DaemonSet
+  # replicas not applicable for DaemonSet
+  terminationGracePeriodSeconds: 60
+  minReadySeconds: 10
 
-# --------------------------------------------------
+  # Pod annotations for monitoring integration
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9100"
+    prometheus.io/path: "/metrics"
+
+  # Pod labels for filtering and service mesh compatibility
+  podLabels:
+    app.kubernetes.io/component: ingress-controller
+    app.kubernetes.io/part-of: aicc-mlops-platform
+    tier: infrastructure
+
+# ==============================================================================
+# Pod Disruption Budget
+# Ensures minimum availability during maintenance operations
+# ==============================================================================
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# ==============================================================================
+# Priority Class
+# Marks Traefik as system-critical workload for scheduler priority
+# ==============================================================================
+priorityClassName: "system-cluster-critical"
+
+# ==============================================================================
+# Update Strategy
+# RollingUpdate ensures zero-downtime upgrades
+# ==============================================================================
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+# ==============================================================================
 # Service Configuration
-# (Will be configured later)
-# --------------------------------------------------
+# Decision: ClusterIP + HostPort (not LoadBalancer)
+# Rationale: Single-node environment without external load balancer
+# ==============================================================================
 service:
   enabled: true
-  type: ClusterIP  # HostPort mode uses ClusterIP
+  type: ClusterIP
+  single: true
+  annotations:
+    service.kubernetes.io/topology-aware-hints: "auto"
 
-# --------------------------------------------------
-# Ports Configuration
-# --------------------------------------------------
+# ==============================================================================
+# Network Ports Configuration
+# Decision: HostPort 80/443 for direct host binding
+# Rationale: Avoids NodePort range (30000-32767), provides standard HTTP/HTTPS ports
+# ==============================================================================
 ports:
+  # Dashboard & API (internal only)
+  traefik:
+    port: 9000
+    expose:
+      default: false
+    exposedPort: 9000
+    protocol: TCP
+
+  # HTTP Entrypoint
   web:
     port: 8000
+    hostPort: 80
     expose:
       default: true
     exposedPort: 80
+    protocol: TCP
+
+  # HTTPS Entrypoint
   websecure:
     port: 8443
+    hostPort: 443
     expose:
       default: true
     exposedPort: 443
+    protocol: TCP
+    tls:
+      enabled: true
+      # Certificate management delegated to cert-manager
+      options: ""
 
-# --------------------------------------------------
-# Resource Limits
-# --------------------------------------------------
+  # Prometheus Metrics
+  metrics:
+    port: 9100
+    expose:
+      default: false
+    exposedPort: 9100
+    protocol: TCP
+
+# Host network disabled - use HostPort for isolation
+hostNetwork: false
+
+# ==============================================================================
+# Ingress Routes for Dashboard
+# Decision: Enable with BasicAuth protection
+# ==============================================================================
+ingressRoute:
+  dashboard:
+    enabled: true
+    matchRule: "Host(`traefik.aicc.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+    entryPoints:
+      - websecure
+    middlewares:
+      - name: dashboard-auth
+    tls: {}
+
+# ==============================================================================
+# Additional Traefik Arguments
+# Configure providers and security options
+# ==============================================================================
+additionalArguments:
+  - "--providers.kubernetesingress.allowEmptyServices=true"
+  - "--serversTransport.insecureSkipVerify=false"
+  - "--metrics.prometheus.addEntryPointsLabels=true"
+  - "--metrics.prometheus.addRoutersLabels=true"
+  - "--metrics.prometheus.addServicesLabels=true"
+
+# ==============================================================================
+# Resource Management
+# Decision: 500m CPU / 1G RAM baseline, 2 CPU / 4G limits
+# Rationale: Prevents resource starvation of GPU workloads
+# ==============================================================================
 resources:
   requests:
     cpu: "500m"
@@ -52,7 +165,90 @@ resources:
     cpu: "2"
     memory: 4G
 
-# --------------------------------------------------
-# Additional Configuration
-# (To be completed later)
-# --------------------------------------------------
+# ==============================================================================
+# Security Context
+# Keep Traefik defaults - already hardened
+# ==============================================================================
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - NET_BIND_SERVICE
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65532
+
+podSecurityContext:
+  fsGroup: 65532
+  fsGroupChangePolicy: "OnRootMismatch"
+
+# ==============================================================================
+# Logging Configuration
+# Decision: Enable access logs in JSON format for audit compliance
+# ==============================================================================
+logs:
+  general:
+    level: INFO
+    format: json
+  access:
+    enabled: true
+    format: json
+    fields:
+      defaultMode: keep
+      names: {}
+      headers:
+        defaultMode: drop  # Privacy: drop headers by default
+
+# ==============================================================================
+# Metrics & Observability
+# Decision: Enable Prometheus metrics for Zabbix integration
+# ==============================================================================
+metrics:
+  prometheus:
+    enabled: true
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+
+# ==============================================================================
+# RBAC Configuration
+# Enable Role-Based Access Control
+# ==============================================================================
+rbac:
+  enabled: true
+  namespaced: false
+
+# ==============================================================================
+# Service Account
+# ==============================================================================
+serviceAccount:
+  name: "traefik"
+
+# ==============================================================================
+# Affinity & Tolerations
+# Single-node configuration - minimal affinity rules
+# ==============================================================================
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists
+
+# ==============================================================================
+# Experimental Features
+# Decision: Disabled for production stability
+# ==============================================================================
+experimental:
+  kubernetesGateway:
+    enabled: false
+  plugins: {}
+
+# ==============================================================================
+# IngressClass
+# Create default IngressClass for automatic ingress handling
+# ==============================================================================
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+  name: traefik
