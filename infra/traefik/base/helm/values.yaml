@@ -15,7 +15,7 @@ global:
 # ==============================================================================
 image:
   registry: docker.io
-  repository: traefik
+  repository: library/traefik 
   tag: "v3.6.6"
   pullPolicy: IfNotPresent
 
@@ -223,8 +223,8 @@ rbac:
 # ==============================================================================
 # Service Account
 # ==============================================================================
-serviceAccount:
-  name: "traefik"
+#serviceAccount:
+#  name: "traefik"
 
 # ==============================================================================
 # Affinity & Tolerations
