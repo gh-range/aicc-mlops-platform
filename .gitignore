@@ -22,6 +22,11 @@ secrets/
 .env
 .env.*
 
+# Kubernetes Secrets (sensitive data)
+*-secret.yaml
+*-auth-secret.yaml
+infra/traefik/configs/middlewares/dashboard-auth-secret.yaml
+
 # Helm
 charts/*/charts/
 charts/*/Chart.lock
