@@ -1,0 +1,60 @@
+# AICC MLOps Platform - Visual Documentation
+
+**Purpose**: Visual proof of deployment and operational status for technical validation and portfolio presentation.
+
+## Infrastructure Layer
+
+### Kubernetes Cluster Status
+![K3s Cluster Overview](infrastructure/k3s-cluster-overview.PNG)
+- **Nodes**: Single-node MAV configuration (llm1)
+- **Status**: All system pods running and ready
+- **Runtime**: k3s v1.34.3 with containerd
+
+### GPU Hardware
+![NVIDIA GPU Status](infrastructure/nvidia-gpu-status.PNG)
+- **Device**: NVIDIA RTX A4000 (16GB GDDR6)
+- **Driver**: 590.44.01
+- **CUDA**: 13.1
+- **Utilization**: Monitored via nvidia-smi
+
+### Helm Releases
+![Helm Releases Status](infrastructure/helm-releases-status.PNG)
+- **Traefik**: v38.0.2 (Ingress Controller)
+- **Status**: All releases deployed successfully
+
+## Monitoring Layer
+
+### System Observability
+![Zabbix GPU Monitoring](monitoring/zabbix-gpu-monitoring.PNG)
+- **Platform**: Zabbix 7 with NVIDIA sensor integration
+- **Metrics**: GPU temperature, utilization, memory
+- **Alerting**: Threshold-based notifications
+
+### Network Ingress
+![Traefik Dashboard](monitoring/traefik-dashboard-overview.PNG)
+- **Entrypoints**: HTTP (80), HTTPS (443)
+- **Middlewares**: BasicAuth, Security Headers, Rate Limiting
+- **TLS**: Cert-manager integration ready
+
+## Application Layer
+
+### Multi-User Development Environment
+![JupyterHub Overview](apps/jupyter-overview.PNG)
+- **Platform**: JupyterHub with GPU time-slicing support
+- **Authentication**: GitHub OAuth integration
+- **Resource Quotas**: Per-user CPU/GPU/Memory limits
+
+## Technical Validation
+
+All screenshots demonstrate:
+- [o] Zero-downtime deployment capabilities
+- [o] Infrastructure-as-Code (GitOps) enforcement
+- [o] Enterprise security controls (RBAC, NetworkPolicy)
+- [o] Production-grade monitoring and observability
+- [o] GPU resource management and scheduling
+
+## Compliance Notes
+
+- Screenshots redacted of sensitive information (IPs, tokens)
+- Captured from development MAV environment
+- Represents reference architecture for SuperPod scaling
