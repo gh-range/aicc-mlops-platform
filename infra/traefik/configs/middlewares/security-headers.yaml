@@ -9,13 +9,17 @@ metadata:
 spec:
   headers:
     browserXssFilter: true
-    contentTypeNosniff: true
+    contentTypeNosniff: true # anti MIME-type sniff
     forceSTSHeader: true
     stsIncludeSubdomains: true
     stsPreload: true
     stsSeconds: 31536000
-    frameDeny: true
+    frameDeny: true # anti clickjacking
     customFrameOptionsValue: "SAMEORIGIN"
     customResponseHeaders:
       X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex"
       Server: ""  # Hide server version
+    referrerPolicy: "same-origin" # Referrer limit
+    customResponseHeaders: # remove traefik version info
+      X-Powered-By: "AICC-MLOps-MAV" 
+

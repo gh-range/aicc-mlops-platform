@@ -8,6 +8,9 @@ metadata:
     app.kubernetes.io/component: middleware
 spec:
   rateLimit:
-    average: 100
+    average: 50
     period: 1s
-    burst: 50
+    burst: 100
+    sourceCriterion: # Identify user with client ip
+      ipStrategy:
+        depth: 1

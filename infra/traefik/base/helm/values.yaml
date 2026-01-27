@@ -102,6 +102,12 @@ ports:
       default: true
     exposedPort: 80
     protocol: TCP
+    # Global Redirection: HTTP to HTTPS
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+        permanent: true
 
   # HTTPS Entrypoint
   websecure:
@@ -264,3 +270,5 @@ ingressRoute:
       - name: dashboard-auth
         namespace: traefik
     tls: {}
+
+

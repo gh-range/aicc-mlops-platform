@@ -12,9 +12,9 @@ spec:
       services:
         - name: api@internal
           kind: TraefikService
-      middlewares:
-        - name: dashboard-auth
-        - name: security-headers
+      middlewares: # sort by execution order
         - name: rate-limit
+        - name: security-headers
+        - name: dashboard-auth
   tls:
     secretName: traefik-dashboard-tls # reversed for https cert
