@@ -128,20 +128,6 @@ ports:
 hostNetwork: false
 
 # ==============================================================================
-# Ingress Routes for Dashboard
-# Decision: Enable with BasicAuth protection
-# ==============================================================================
-ingressRoute:
-  dashboard:
-    enabled: true
-    matchRule: "Host(`traefik.aicc.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
-    entryPoints:
-      - websecure
-    middlewares:
-      - name: dashboard-auth
-    tls: {}
-
-# ==============================================================================
 # Additional Traefik Arguments
 # Configure providers and security options
 # ==============================================================================
@@ -252,3 +238,29 @@ ingressClass:
   enabled: true
   isDefaultClass: true
   name: traefik
+
+# ==============================================================================
+# API and Dashboard Configuration
+# Decision: Enable API and Dashboard for infrastructure observability
+# Rationale: Provides real-time insights into routing logic and service health
+# ==============================================================================
+api:
+  enabled: true
+  dashboard: true
+  insecure: false  # Ensure API is not exposed on port 8080 without protection
+
+# ==============================================================================
+# Ingress Routes for Dashboard
+# Decision: Enable with BasicAuth protection
+# ==============================================================================
+ingressRoute:
+  dashboard:
+    enabled: false 
+    matchRule: "Host(`traefik.aicc.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+
+    entryPoints:
+      - websecure
+    middlewares:
+      - name: dashboard-auth
+        namespace: traefik
+    tls: {}
