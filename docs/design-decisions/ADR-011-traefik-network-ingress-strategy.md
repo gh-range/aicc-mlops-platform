@@ -267,8 +267,8 @@ Already disabled via `--disable traefik` (verified in Step 2.1).
 
 ## Validation Criteria
 
-[o] External access: `curl http://node-ip:80` returns Traefik 404  
-[o] HTTPS access: `curl -k https://node-ip:443` returns Traefik response  
+[o] External access: `curl http://<node-ip>:80` returns Traefik 404  
+[o] HTTPS access: `curl -k https://<node-ip>:443` returns Traefik response  
 [o] No hostNetwork: `kubectl get pod -n traefik-system -o yaml | grep hostNetwork` shows `false`  
 [o] Namespace isolation: Traefik cannot access host /etc/hosts  
 [o] Pod restart: Port rebinds automatically within 10 seconds  

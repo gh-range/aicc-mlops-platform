@@ -127,9 +127,9 @@ Based on **ADR-005: Orchestration Platform Comparison**, we defer commercial pla
 
 All technical decisions are documented following enterprise architectural governance:
 
-* **[ADR-001](docs/design-decisions/01-why-k3s.md)**: k3s selection rationale and k8s migration path
-* **[ADR-004](docs/design-decisions/04-gpu-operator-deployment.md)**: GPU Operator strategy and B200 MIG planning
-* **[ADR-005](docs/design-decisions/05-orchestration-platform-comparison.md)**: Run:AI vs k3s TCO analysis and hybrid adoption strategy
+* **[ADR-001](docs/design-decisions/ADR-001-why-k3s.md)**: k3s selection rationale and k8s migration path
+* **[ADR-004](docs/design-decisions/ADR-004-gpu-operator-deployment.md)**: GPU Operator strategy and B200 MIG planning
+* **[ADR-005](docs/design-decisions/ADR-005-orchestration-platform-comparison.md)**: Run:AI vs k3s TCO analysis and hybrid adoption strategy
 * **[Operating Plan](docs/operating-plan.md)**: 12-month MAV → HA roadmap with Q4 2026 decision gate for Phase 3
 * **[Scaling Roadmap](docs/architecture/scaling-roadmap.md)**: Technical requirements for each phase (MAV → HA → SuperPod)
 
@@ -274,7 +274,7 @@ This reference architecture is designed for adaptation by:
 **Next Milestone**: Q3 2026 - HA Cluster Deployment  
 **Target Commercial Launch**: Q1 2027 - 128-node B200 SuperPod
 
-**Questions?** Open an issue or review [ADR-005](docs/design-decisions/05-orchestration-platform-comparison.md) for platform selection rationale.
+**Questions?** Open an issue or review [ADR-005](docs/design-decisions/ADR-005-orchestration-platform-comparison.md) for platform selection rationale.
 
 </div>
 

@@ -262,7 +262,7 @@ api:
 ingressRoute:
   dashboard:
     enabled: false 
-    matchRule: "Host(`traefik.aicc.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+    matchRule: "Host(`traefik.mlops.work`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
 
     entryPoints:
       - websecure

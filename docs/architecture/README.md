@@ -12,6 +12,6 @@ _Will be populated during course implementation_
 
 ---
 
-**Part of**: AI Data Center MLOps Platform  
-**Managed by**: [Your Name]  
+**Part of**: AI Data Center MLOps Platform
+**Managed by**: Range
 **Last Updated**: 2025-12-30

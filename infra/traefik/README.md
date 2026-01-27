@@ -1,7 +1,7 @@
 # Traefik Ingress Controller Infrastructure
 
 **Chart Version**: 38.0.2  
-**App Version**: v3.6.6  
+**App Version**: v3.6.7
 **Deployment Mode**: DaemonSet with HostPort  
 **Namespace**: traefik-system
 
@@ -88,4 +88,4 @@ helm upgrade traefik traefik/traefik \
 
 **Part of**: AI Computing Center MLOps Platform  
 **Managed by**: Range  
-**Last Updated**: 2026-01-22
+**Last Updated**: 2026-01-28

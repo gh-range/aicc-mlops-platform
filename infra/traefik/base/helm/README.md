@@ -97,6 +97,6 @@ sudo netstat -tunlp | grep -E ':80|:443'
 
 ### Test Dashboard Access
 ```bash
-curl -k -u admin:password https://traefik.<domain>/dashboard/
+curl -k -u admin:<password> https://traefik.<domain>/dashboard/
 ```
 

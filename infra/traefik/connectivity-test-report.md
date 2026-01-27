@@ -1,6 +1,6 @@
 # Traefik Connectivity Test Report
 
-**Date**: 2026-01-25  
+**Date**: 2026-01-26
 **Node**: llm1
 
 ## Test Results
@@ -16,10 +16,10 @@
 
 ## Dashboard Access
 
-**URL**: https://traefik.aicc.local/dashboard/  
-**Auth**: admin / admin123  
+**URL**: https://traefik.mlops.work/dashboard/  
+**Auth**: admin / <password>
 **Note**: Trailing slash `/` is required
-          add 'traefik.aicc.local <ip>' in /etc/hosts
+          add 'traefik.mlops.work <ip>' in /etc/hosts
 
 ## Status: [o] All Tests Passed
 
