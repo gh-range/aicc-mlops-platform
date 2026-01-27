@@ -8,6 +8,6 @@ metadata:
     app.kubernetes.io/component: middleware
 spec:
   basicAuth:
-    secret: traefik-dashboard-auth
+    secret: dashboard-auth-secret
     realm: "Traefik Dashboard - AICC MLOps Platform"
     removeHeader: true
