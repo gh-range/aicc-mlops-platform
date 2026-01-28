@@ -13,5 +13,5 @@ _Will be populated during implementation_
 ---
 
 **Part of**: AI Computing Center MLOps Platform  
-**Managed by**: [Your Name]  
+**Managed by**: Range  
 **Last Updated**: 2025-12-30
