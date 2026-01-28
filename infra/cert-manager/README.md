@@ -16,6 +16,10 @@ This component implements automated X.509 certificate management for the AICC ML
 - Logs: `kubectl logs -n cert-manager -l app.kubernetes.io/instance=cert-manager`
 - Status: `kubectl get certificate --all-namespaces`
 
+## Strategic Decision: Challenge Type
+- **Primary**: DNS-01 Challenge
+- **Reasoning**: Supports wildcard certificates (*.mlops.work) and ensures internal service isolation in high-security SuperPod environments.
+
 ---
 
 **Part of**: AI Data Center MLOps Platform  
