@@ -84,3 +84,10 @@ kubectl delete namespace gpu-operator
 
 - [NVIDIA GPU Operator Documentation](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/)
 - [k3s GPU Support](https://docs.k3s.io/advanced#nvidia-container-runtime-support)
+
+---
+
+
+**Part of**: AI Computing Center MLOps Platform
+**Managed by**: Range
+**Last Updated**: 2026-01-13

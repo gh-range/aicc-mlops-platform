@@ -100,3 +100,8 @@ sudo netstat -tunlp | grep -E ':80|:443'
 curl -k -u admin:<password> https://traefik.<domain>/dashboard/
 ```
 
+---
+
+**Part of**: AI Computing Center MLOps Platform
+**Managed by**: Range
+**Last Updated**: 2026-01-22

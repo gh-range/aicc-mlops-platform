@@ -31,3 +31,9 @@ kubectl create secret generic traefik-dashboard-auth \
 - Never commit actual secrets to Git
 - Use strong passwords in production
 - Rotate credentials regularly
+
+---
+
+**Part of**: AI Computing Center MLOps Platform
+**Managed by**: Range
+**Last Updated**: 2026-01-27
