@@ -1,0 +1,28 @@
+installCRDs: true
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128M
+  limits:
+    cpu: 500m
+    memory: 256M
+
+nodeSelector:
+  kubernetes.io/hostname: llm1.mlops.work
+
+# Ensure the tolerations from the previous step are also present if this is a master node
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+# Cloudflare DNS-01 requires recursion for challenge validation
+extraArgs:
+  - --dns01-recursive-nameservers-only
+  - --dns01-recursive-nameservers=1.1.1.1:53,8.8.8.8:53
