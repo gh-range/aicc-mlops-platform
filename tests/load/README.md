@@ -8,10 +8,10 @@ Load testing scripts and results
 
 ## Contents
 
-_Will be populated during course implementation_
+_Will be populated during implementation_
 
 ---
 
-**Part of**: AI Data Center MLOps Platform  
+**Part of**: AI Computing Center MLOps Platform  
 **Managed by**: [Your Name]  
 **Last Updated**: 2025-12-30
