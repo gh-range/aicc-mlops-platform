@@ -1,12 +1,29 @@
+# Temporary files
+tmp/
+temp/
+*.swp
+*~
+*.tmp
+
 # macOS
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.so
+venv/
+env/
 
 # IDE
 .vscode/
 .idea/
 *.iml
 *.swo
-
 
 # Kubernetes
 *.kubeconfig
@@ -31,36 +48,21 @@ infra/traefik/configs/middlewares/dashboard-auth-secret.yaml
 charts/*/charts/
 charts/*/Chart.lock
 
+# Trivy cache
+.trivyignore
+trivy-cache
+
+# cert-management
+infra/cert-manager/cluster-issuer.yaml
+
 # Terraform
 *.tfstate
 *.tfstate.*
 .terraform/
 
-# Python
-__pycache__/
-*.pyc
-*.py[cod]
-*$py.class
-.Python
-.pytest_cache/
-.so
-venv/
-env/
-
 # Logs
 *.log
 logs/
-
-# Temporary files
-tmp/
-temp/
-*.swp
-*~
-*.tmp
-
-# Trivy cache
-.trivyignore
-trivy-cache
 
 # Local test outputs
 test-results/

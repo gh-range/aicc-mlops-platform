@@ -57,6 +57,9 @@ This project aims to establish an MLOps platform scalable to NVIDIA B200 SuperPo
 ### Neutral
 - **Connectivity**: Requires Cloudflare API access. If the egress IP is dynamic, API Token IP filtering must be disabled or managed via a NAT gateway static IP.
 
+## Troubleshooting Note
+During validation, Error 9109 was encountered. Resolved by disabling Client IP Address Filtering on Cloudflare API Token to accommodate dynamic egress IPs of the MAV node.
+
 ## Implementation Plan
 1. **Phase 1**: Create Cloudflare Scoped API Tokens and store it in the Secret of the 'cert-manager' Namespace.
 2. **Phase 2**: Deploy the 'cert-manager' Helm Chart and configure the 'ClusterIssuer'.
