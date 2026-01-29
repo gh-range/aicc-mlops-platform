@@ -23,4 +23,4 @@ spec:
         # Optional: Apply this solver only to our domain
         selector:
           dnsZones:
-            - "mlops.work"
+            - "<your domain>"
