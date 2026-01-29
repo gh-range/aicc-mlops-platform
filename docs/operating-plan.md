@@ -481,6 +481,12 @@ This operating plan defines the strategic roadmap for scaling from a single-node
 - Focus on niche markets (finance, healthcare, government)
 - Build reputation through case studies and whitepapers
 
+### Certificate Risk Management (2026-2027)
+
+**Monitoring**: Integrated with Zabbix 7 for real-time expiry tracking.
+
+**Failover**: Backup ClusterIssuer (Staging) configured to prevent rate-limit blocking during troubleshooting.
+
 ---
 
 ## Appendix: Phased Procurement Strategy
