@@ -197,15 +197,27 @@ kubectl describe pod jupyter-<username> -n jupyterhub
 - **Core Service**: proxy-public
 - **Status**: Audit completed on $(date +'%Y-%m-%d'). Service is ready for TLS integration.
 
+## TLS Validation Report (Step 4.4)
+- **Status**: Verified Active
+- **Issuer**: Let's Encrypt (R13/E6)
+- **Protocol**: TLS 1.3 / HSTS Enabled (Global Policy)
+- **Trust Chain**: Full chain provided by Traefik. Tested via OpenSSL.
+- **Redirection**: Verified HTTP (301) to HTTPS (200).
+
 ## Files
 
 ```
 apps/jupyterhub/
-├── values.yaml          # Helm chart configuration
-└── README.md            # This file
+├── values.yaml              # Helm chart configuration
+├── README.md                # This file
+├── certificate.yaml         # 
+├── middleware-redirect.yaml #  
+├── ingressroute-http.yaml   #  
+└── ingressroute.yaml        # 
 
 infra/namespaces/jupyterhub/
 └── namespace.yaml       # Namespace, ResourceQuota, LimitRange
+
 ```
 
 ## References
