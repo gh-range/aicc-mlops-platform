@@ -40,6 +40,12 @@ This component implements automated X.509 certificate management for the AICC ML
 - **Policy**: Automatic renewal is triggered 30 days(720h) before expiration.
 - **Verification**: Check Last Transition Time in 'kubectl describe certificate'.
 
+## Cloudflare Proxy Integration
+- **Status**: Proxied via Cloudflare Edge.
+- **Edge Certificate**: Google Trust Services (Universal SSL).
+- **Origin Certificate**: Let's Encrypt (managed by cert-manager).
+- **SSL Mode**: Must be set to **Full (Strict)** to ensure end-to-end integrity.
+
 ### Metrics for Zabbix 7 Integration
 - **Endpoint**: <pod ip>:9402/metrics
 - **Key Metrics**:
@@ -50,5 +56,5 @@ This component implements automated X.509 certificate management for the AICC ML
 
 **Part of**: AI Data Center MLOps Platform  
 **Managed by**: Range  
-**Last Updated**: 2025-01-29
+**Last Updated**: 2025-01-30
 
