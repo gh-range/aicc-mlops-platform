@@ -76,6 +76,13 @@ During validation, Error 9109 was encountered. Resolved by disabling Client IP A
 2. **Phase 2**: Deploy the 'cert-manager' Helm Chart and configure the 'ClusterIssuer'.
 3. **Phase 3**: Integrate Traefik 'IngressRoute' to achieve automatic signature verification.
 
+## References
+
+- [cert-manager Documentation](https://cert-manager.io/docs/)
+- [Cloudflare API Token Permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)
+- [Let's Encrypt DNS-01 Challenge](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge)
+- [NVIDIA SuperPod Security Best Practices](https://docs.nvidia.com/dgx-superpod/)
+
 ## Revision History
 
 | Date | Version | Author | Changes |
