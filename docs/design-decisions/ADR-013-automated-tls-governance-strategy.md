@@ -1,7 +1,7 @@
 ## ADR-013: Automated TLS Governance Strategy
 
 **Status**: Accepted  
-**Date**: 2026-01-28  
+**Date**: 2026-01-30  
 **Decision Makers**: Platform Engineering Team  
 **Technical Story**: AICC MLOps Platform Security Initialization
 
@@ -60,8 +60,26 @@ This project aims to establish an MLOps platform scalable to NVIDIA B200 SuperPo
 ## Troubleshooting Note
 During validation, Error 9109 was encountered. Resolved by disabling Client IP Address Filtering on Cloudflare API Token to accommodate dynamic egress IPs of the MAV node.
 
+## Cloudflare Proxy Considerations
+
+### Infrastructure Topology
+- **Edge Layer**: Cloudflare provides Universal SSL (issued by Google Trust Services) to end-users when Proxy (Orange Cloud) is enabled.
+- **Origin Layer**: cert-manager issues Let's Encrypt certificates to the MAV node for internal cluster security.
+
+### Security Compliance
+- **Requirement**: Cloudflare SSL/TLS setting MUST be set to **Full (Strict)**.
+- **Rationale**: Ensures the connection between Cloudflare Edge and the MAV node is encrypted and validated against the cert-manager issued certificate, preventing Man-in-the-Middle (MITM) attacks and redirection loops.
+- **Header Trust**: Traefik must be configured to trust Cloudflare IP ranges to correctly interpret 'X-Forwarded-Proto' headers for backend applications like JupyterHub.
+
 ## Implementation Plan
 1. **Phase 1**: Create Cloudflare Scoped API Tokens and store it in the Secret of the 'cert-manager' Namespace.
 2. **Phase 2**: Deploy the 'cert-manager' Helm Chart and configure the 'ClusterIssuer'.
 3. **Phase 3**: Integrate Traefik 'IngressRoute' to achieve automatic signature verification.
+
+## Revision History
+
+| Date | Version | Author | Changes |
+|------|---------|--------|---------|
+| 2026-01-28 | 0.1 | Range | Initial automated TLS governance strategy |
+| 2026-01-30 | 0.2 | Range | Added cloudflare proxy considerations |
 
