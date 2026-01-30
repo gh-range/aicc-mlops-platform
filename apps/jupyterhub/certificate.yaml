@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jupyter-wildcard-tls
+  namespace: jupyterhub
+spec:
+  secretName: jupyter-wildcard-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: "*.mlops.work"
+  dnsNames:
+    - "*.mlops.work"
+    - "mlops.work"
+  privateKey:
+    rotationPolicy: Always
