@@ -47,7 +47,7 @@ This component implements automated X.509 certificate management for the AICC ML
 - **SSL Mode**: Must be set to **Full (Strict)** to ensure end-to-end integrity.
 
 ### Metrics for Zabbix 7 Integration
-- **Endpoint**: <pod ip>:9402/metrics
+- **Endpoint**: `cert-manager.cert-manager.svc.cluster.local:9402/metrics` (ClusterIP: 10.43.136.143)
 - **Key Metrics**:
   - certmanager_certificate_expiration_timestamp_seconds: Monitor for certificates expiring in < 15 days.
   - certmanager_certificate_ready_status: Trigger alert if status is not 1 (Ready).
@@ -56,5 +56,5 @@ This component implements automated X.509 certificate management for the AICC ML
 
 **Part of**: AI Data Center MLOps Platform  
 **Managed by**: Range  
-**Last Updated**: 2025-01-30
+**Last Updated**: 2026-01-30
 

@@ -67,7 +67,7 @@ spec:
 
 ## Access
 
-**URL**: `http://<node-ip>:30080`
+**Production URL**: `https://jupyter.mlops.work`
 
 **Login**: Any username/password (dummy authenticator)
 
@@ -102,6 +102,13 @@ GPU Name: NVIDIA RTX A4000
 - Max 40 CPU cores
 - Max 96 GB memory
 
+## Production Status
+
+### [o] Completed
+- **TLS Integration**: Deployed via Traefik IngressRoute with Let's Encrypt wildcard certificates
+- **HTTPS Enforcement**: Automatic HTTP to HTTPS redirection via Middleware
+- **Certificate Management**: Automated renewal via cert-manager
+
 ## Production Upgrade Path
 
 ### Phase 1: Security Hardening
@@ -128,32 +135,6 @@ hub:
   db:
     type: postgres
     url: postgresql://user:pass@postgres.default.svc:5432/jupyterhub
-```
-
-### Phase 3: Traefik Ingress
-
-Remove NodePort, add IngressRoute:
-
-```yaml
-proxy:
-  service:
-    type: ClusterIP
-***
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: jupyterhub
-  namespace: jupyterhub
-spec:
-  entryPoints: [websecure]
-  routes:
-  - match: Host(`jupyter.mlops.work`)
-    kind: Rule
-    services:
-    - name: proxy-public
-      port: 80
-  tls:
-    certResolver: letsencrypt
 ```
 
 ## Monitoring
@@ -209,11 +190,11 @@ kubectl describe pod jupyter-<username> -n jupyterhub
 ```
 apps/jupyterhub/
 ├── values.yaml              # Helm chart configuration
-├── README.md                # This file
-├── certificate.yaml         # 
-├── middleware-redirect.yaml #  
-├── ingressroute-http.yaml   #  
-└── ingressroute.yaml        # 
+├── certificate.yaml         # TLS certificate request (*.mlops.work)
+├── ingressroute.yaml        # HTTPS entrypoint (websecure)
+├── ingressroute-http.yaml   # HTTP entrypoint with redirect
+├── middleware-redirect.yaml # HTTP to HTTPS redirection policy
+└── README.md                # This file
 
 infra/namespaces/jupyterhub/
 └── namespace.yaml       # Namespace, ResourceQuota, LimitRange
@@ -236,5 +217,5 @@ infra/namespaces/jupyterhub/
 
 **Part of**: AI Computing Center MLOps Platform
 **Managed by**: Range
-**Last Updated**: 2026-01-29
+**Last Updated**: 2026-01-30
 
