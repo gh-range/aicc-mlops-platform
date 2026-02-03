@@ -97,30 +97,19 @@ ports:
   # HTTP Entrypoint
   web:
     port: 8000
-    hostPort: 80
     expose:
-      default: true
+     default: true
     exposedPort: 80
+    hostPort: 80
     protocol: TCP
-    # Global Redirection: HTTP to HTTPS
-    redirections:
-      entryPoint:
-        to: websecure
-        scheme: https
-        permanent: true
 
-  # HTTPS Entrypoint
   websecure:
     port: 8443
-    hostPort: 443
     expose:
-      default: true
+     default: true 
     exposedPort: 443
+    hostPort: 443
     protocol: TCP
-    tls:
-      enabled: true
-      # Certificate management delegated to cert-manager
-      options: ""
 
   # Prometheus Metrics
   metrics:
@@ -135,7 +124,7 @@ hostNetwork: false
 
 # ==============================================================================
 # Additional Traefik Arguments
-# Configure providers and security options
+# Configure providers, security options and HTTP to HTTPS redirect
 # ==============================================================================
 additionalArguments:
   - "--providers.kubernetesingress.allowEmptyServices=true"
@@ -143,6 +132,9 @@ additionalArguments:
   - "--metrics.prometheus.addEntryPointsLabels=true"
   - "--metrics.prometheus.addRoutersLabels=true"
   - "--metrics.prometheus.addServicesLabels=true"
+  - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+  - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+  - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
 
 # ==============================================================================
 # Resource Management
@@ -261,14 +253,11 @@ api:
 # ==============================================================================
 ingressRoute:
   dashboard:
-    enabled: false 
+    enabled: true
     matchRule: "Host(`traefik.mlops.work`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
 
     entryPoints:
       - websecure
     middlewares:
       - name: dashboard-auth
-        namespace: traefik
-    tls: {}
-
-
+        namespace: traefik-system
