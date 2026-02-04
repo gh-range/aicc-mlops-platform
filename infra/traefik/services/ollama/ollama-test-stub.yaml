@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-service
+  namespace: ollama
+  labels:
+    app: ollama-stub
+    purpose: routing-test
+spec:
+  selector:
+    app: ollama-stub
+  ports:
+    - name: http
+      port: 11434
+      targetPort: 11434
+      targetPort: 8080
+      protocol: TCP
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-stub
+  namespace: ollama
+  labels:
+    app: ollama-stub
+    purpose: routing-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama-stub
+  template:
+    metadata:
+      labels:
+        app: ollama-stub
+    spec:
+      containers:
+        - name: stub-server
+          image: hashicorp/http-echo:latest
+          args:
+            - "-text=Ollama API Stub - Routing Test OK"
+            - "-listen=:8080"
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              memory: 32M
+              cpu: 50m
+            limits:
+              memory: 64M
+              cpu: 100m
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5

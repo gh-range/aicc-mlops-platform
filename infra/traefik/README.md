@@ -71,6 +71,28 @@ helm upgrade traefik traefik/traefik \
 - **ArgoCD**: GitOps-based deployment automation
 - **NetworkPolicy**: Zero-trust ingress traffic control
 
+## Network Architecture
+
+### TLS Certificate Chain
+```
+[External User] 
+    ↓ HTTPS (Port 443)
+    ↓ Cert: Google Trust Services (Cloudflare Universal SSL)
+[Cloudflare Proxy] 
+    ↓ HTTPS (Origin Pull)
+    ↓ Cert: Let's Encrypt R13 (Origin Certificate)
+[Traefik (hostPort 443)]
+    ↓ IngressRoute + Middleware
+[Backend Services]
+```
+
+**Certificate Management:**
+- **Origin**: Let's Encrypt via cert-manager (ACME DNS-01)
+- **Edge**: Cloudflare Universal SSL (Automatic)
+- **Mode**: Full (Strict) - Cloudflare validates origin certificate
+
+See `base/tls/certificates.md` for detailed certificate inventory.
+
 ## Maintenance
 
 - **Certificate Rotation**: Automated via cert-manager
@@ -88,4 +110,5 @@ helm upgrade traefik traefik/traefik \
 
 **Part of**: AI Computing Center MLOps Platform  
 **Managed by**: Range  
-**Last Updated**: 2026-01-28
+**Last Updated**: 2026-02-04
+

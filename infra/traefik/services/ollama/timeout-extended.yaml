@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: timeout-extended
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/component: middleware
+  annotations:
+    traefik.io/description: "Extended timeout for LLM inference operations (5 minutes)"
+spec:
+  forwardAuth:
+    responseTimeout: 300s
+  buffering:
+    maxRequestBodyBytes: 10485760  # 10MB for prompt uploads
+    maxResponseBodyBytes: 10485760 # 10MB for response streaming

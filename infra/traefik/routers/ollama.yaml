@@ -1,0 +1,32 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ollama-inference-api
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/component: inference-api
+    app.kubernetes.io/part-of: aicc-mlops-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    traefik.io/description: "Ollama LLM Inference API - Extended timeout for model generation"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ollama.mlops.work`)
+      kind: Rule
+      services:
+        - name: ollama-service # Ollama namespace in the future
+          namespace: ollama
+          port: 11434
+      middlewares:
+        - name: security-headers
+          namespace: traefik-system
+        - name: timeout-extended
+          namespace: traefik-system
+  tls:
+    secretName: mlops-work-wildcard-tls
+    options:
+      name: enterprise-tls-policy
+      namespace: traefik-system

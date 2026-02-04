@@ -261,3 +261,20 @@ ingressRoute:
     middlewares:
       - name: dashboard-auth
         namespace: traefik-system
+
+    # Add TLS 
+    tls:
+      secretName: mlops-work-wildcard-tls
+
+# Cross-Namespace Service Reference
+# Required for centralized IngressRoute management in traefik-system
+providers:
+  kubernetesCRD:
+    enabled: true
+    allowCrossNamespace: true
+    allowExternalNameServices: true
+    namespaces: []  # Empty = watch all namespaces
+  kubernetesIngress:
+    enabled: true
+    allowExternalNameServices: true
+    namespaces: []
