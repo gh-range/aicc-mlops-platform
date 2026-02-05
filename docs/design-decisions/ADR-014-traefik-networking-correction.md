@@ -68,3 +68,79 @@ ports:
 - Kubernetes Documentation: [hostPort Networking](https://kubernetes.io/docs/concepts/configuration/overview/#services)
 - Original ADR-014: `docs/design-decisions/ADR-014-traefik-networking-correction.md`
 
+---
+
+## Amendment 2: Centralized IngressRoute Management Strategy
+
+**Date**: 2026-02-05  
+**Status**: Accepted
+
+### Context
+
+After implementing DaemonSet + hostPort architecture, we needed to decide on IngressRoute placement strategy:
+- Option A: Centralized (all IngressRoutes in `traefik-system`)
+- Option B: Distributed (IngressRoutes in respective service namespaces)
+
+### Decision
+
+**Adopted Option A: Centralized Management**
+
+All IngressRoutes deployed in `traefik-system` namespace with cross-namespace service references.
+
+### Rationale
+
+**For Centralized (Chosen):**
+- Single-node MAV environment (not multi-tenant)
+- Platform team owns all routing logic
+- Easier troubleshooting (one namespace to check)
+- Aligns with TLS Secret location
+- Simple monitoring and inventory
+
+**Against Distributed:**
+- Would require Secret duplication or Reflector
+- Routing config scattered across namespaces
+- Harder to generate platform-wide inventory
+- Unnecessary isolation for single platform team
+
+### Configuration
+
+```yaml
+# Helm values.yaml
+providers:
+  kubernetesCRD:
+    allowCrossNamespace: true  # Required for centralized model
+```
+
+### Implementation
+
+- `infra/traefik/routers/` contains all IngressRoute definitions
+- Each IngressRoute annotated with `service-namespace` for clarity
+- Tools (`router-scanner.sh`) provide visibility
+
+### Consequences
+
+**Positive:**
+- [o] All routing visible in one directory
+- [o] Single TLS Secret shared efficiently
+- [o] Simplified cert-manager renewal (one Certificate resource)
+- [o] Easy migration to multi-node (no per-service changes)
+
+**Negative:**
+- [!] Traefik requires cross-namespace RBAC permissions
+- [!] Less namespace isolation (acceptable for platform team)
+
+### Future Migration Path
+
+If multi-tenancy becomes critical:
+1. Deploy cert-manager Certificate per namespace
+2. Move IngressRoutes to service namespaces
+3. Disable `allowCrossNamespace`
+4. Update tooling to scan all namespaces
+
+**Trigger**: >3 independent teams managing services
+
+---
+
+**Reviewed By**: MLOps Platform Team  
+**Next Review**: Q3 2026 or when adding 5th service
+
