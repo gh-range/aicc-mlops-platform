@@ -30,6 +30,34 @@ All routers inherit `enterprise-tls-policy` from global configuration.
 |-------------|------|-----------------|------------------|--------|
 | traefik-dashboard | traefik.mlops.work | api@internal | rate-limit → security-headers → dashboard-redirect → dashboard-auth | [O] Active |
 | ollama-inference-api | ollama.mlops.work | ollama/ollama-service:11434 | security-headers → timeout-extended | [O] Active (Stub) |
+| jupyterhub-https | jupyter.mlops.work | jupyterhub/proxy-public:80 | security-headers | **No rate-limit** (WebSocket), **Cloudflare Proxy disabled** | [o] Active |
+
+### JupyterHub Special Routing Configuration
+
+**Why no rate-limit?**
+- Notebook users may frequently execute code cells
+- Rate limiting causes 429 errors, interrupting kernel connections
+
+**Why no Cloudflare Proxy?**
+- Requires persistent WebSocket connections (free tier has 100-second timeout)
+- Large file uploads (Free tier 100MB limit)
+- Direct Origin connection provides more stable experience
+
+**Why only security headers?**
+- HSTS: Enforces HTTPS
+- X-Frame-Options: Prevents Clickjacking
+- Does not impact WebSocket Upgrade
+
+### Testing Notes
+```bash
+# [x] Incorrect testing method
+curl -I https://jupyter.mlops.work  # Returns 405 (expected behavior)
+
+# [o] Correct testing methods
+curl https://jupyter.mlops.work/  # Returns HTML
+curl https://jupyter.mlops.work/hub/api  # Returns JSON
+
+Translated with DeepL.com (free version)
 
 ## Cross-Namespace Service Reference
 Enabled via Helm values:
@@ -43,5 +71,5 @@ This allows IngressRoutes in traefik-system to reference Services in other names
 
 **Part of**: AI Computing Center MLOps Platform
 **Managed by**: Range
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-05
 

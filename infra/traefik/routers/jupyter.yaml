@@ -1,0 +1,33 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jupyterhub-https
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/name: jupyterhub
+    app.kubernetes.io/component: web-ui
+    app.kubernetes.io/part-of: aicc-mlops-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    traefik.io/description: "JupyterHub - Multi-user Jupyter Notebook Server"
+    service-namespace: "jupyterhub"
+    cloudflare-proxy: "disabled"  # Important: WebSocket requires direct connection
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`jupyter.mlops.work`)
+      kind: Rule
+      services:
+        - name: proxy-public
+          namespace: jupyterhub
+          port: 80
+      middlewares:
+        - name: security-headers
+          namespace: traefik-system
+  tls:
+    secretName: mlops-work-wildcard-tls
+    options:
+      name: enterprise-tls-policy
+      namespace: traefik-system
+
