@@ -55,6 +55,9 @@ trivy-cache
 # cert-management
 infra/cert-manager/cluster-issuer.yaml
 
+# traefik reports
+infra/traefik/reports/router-*
+
 # Terraform
 *.tfstate
 *.tfstate.*
