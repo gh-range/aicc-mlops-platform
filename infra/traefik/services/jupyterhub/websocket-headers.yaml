@@ -1,0 +1,22 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jupyterhub-websocket
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/component: jupyterhub
+    app.kubernetes.io/managed-by: traefik
+    annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  headers:
+    customRequestHeaders:
+      # Ensure WebSocket upgrade headers are preserved
+      Connection: "Upgrade"
+      Upgrade: "websocket"
+    # Preserve original host and client info
+    hostsProxyHeaders:
+      - "X-Forwarded-Host"
+      - "X-Forwarded-For"
+      - "X-Forwarded-Proto"
+      - "X-Real-IP"

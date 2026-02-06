@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jupyterhub-buffering
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/name: jupyterhub
+    app.kubernetes.io/component: middleware
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  buffering:
+    # Allow large request headers (OAuth tokens)
+    maxRequestBodyBytes: 10485760  # 10MB for notebook uploads
+    memRequestBodyBytes: 2097152   # 2MB in-memory buffer
+    maxResponseBodyBytes: 10485760 # 10MB for notebook downloads
+    memResponseBodyBytes: 2097152  # 2MB in-memory buffer
+    retryExpression: "IsNetworkError() && Attempts() < 3"

@@ -18,13 +18,29 @@ spec:
   routes:
     - match: Host(`jupyter.mlops.work`)
       kind: Rule
+      middlewares:
+        # Service middleware（from ../services/jupyterhub/）
+        - name: jupyterhub-websocket
+          namespace: traefik-system
+        - name: jupyterhub-buffering
+          namespace: traefik-system
+        # Golbal middleware（from ../middlewares/）
+        - name: security-headers
+          namespace: traefik-system
+        - name: rate-limit
+          namespace: traefik-system
       services:
         - name: proxy-public
           namespace: jupyterhub
           port: 80
-      middlewares:
-        - name: security-headers
-          namespace: traefik-system
+          sticky:
+            cookie:
+              name: JUPYTERHUB_SESSION
+              secure: true
+              httpOnly: true
+              sameSite: lax
+          responseForwarding:
+            flushInterval: 100ms
   tls:
     secretName: mlops-work-wildcard-tls
     options:
