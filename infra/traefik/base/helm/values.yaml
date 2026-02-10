@@ -1,8 +1,8 @@
 # Traefik Production Values for AICC MLOps Platform
 # Chart: traefik/traefik 38.0.2
-# App Version: v3.6.6
+# App Version: v3.6.7
 # Environment: MAV (Micro-Architecture Validation) Node
-# Last Updated: 2026-01-22
+# Last Updated: 2026-02-10
 
 # ==============================================================================
 # Global Configuration
@@ -246,25 +246,6 @@ api:
   enabled: true
   dashboard: true
   insecure: false  # Ensure API is not exposed on port 8080 without protection
-
-# ==============================================================================
-# Ingress Routes for Dashboard
-# Decision: Enable with BasicAuth protection
-# ==============================================================================
-ingressRoute:
-  dashboard:
-    enabled: true
-    matchRule: "Host(`traefik.mlops.work`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
-
-    entryPoints:
-      - websecure
-    middlewares:
-      - name: dashboard-auth
-        namespace: traefik-system
-
-    # Add TLS 
-    tls:
-      secretName: mlops-work-wildcard-tls
 
 # Cross-Namespace Service Reference
 # Required for centralized IngressRoute management in traefik-system
