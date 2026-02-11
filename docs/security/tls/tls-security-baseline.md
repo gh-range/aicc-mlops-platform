@@ -208,10 +208,93 @@ cd ~/aicc-mlops-platform
 ./scripts/test-weak-ciphers.sh
 ```
 
+## SSL Labs Validation
+
+### Latest Test Results
+
+**Test Date**: 2026-02-11
+**Test URL**: https://www.ssllabs.com/ssltest/
+**Target**: jupyter.mlops.work
+**Overall Grade**: **A+**
+
+#### Detailed Scores
+
+| Category | Score | Status |
+|----------|-------|--------|
+| **Certificate** | 100/100 | ✓ Trusted, Valid |
+| **Protocol Support** | 100/100 | ✓ TLS 1.2/1.3 only |
+| **Key Exchange** | 90/100 | ✓ ECDHE + RSA 2048 |
+| **Cipher Strength** | 90/100 | ✓ AEAD only |
+
+#### Key Findings
+
+[o] **Strengths**:
+- TLS 1.3 supported and preferred
+- All connections use Forward Secrecy
+- HSTS enabled with 1-year max-age
+- No weak cipher suites detected
+- SNI required (security enhancement)
+
+[!] **Notes**:
+- TLS 1.2 enabled for Cloudflare compatibility (by design)
+- RSA 2048 key (industry standard, upgradable to RSA 4096 if needed)
+
+#### HSTS Configuration
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+```
+
+**Parameters**:
+- `max-age=31536000`: 365 days (1 year)
+- `includeSubDomains`: Protects *.mlops.work
+- `preload`: Eligible for browser preload list
+
+**Protection Against**:
+- SSL Stripping attacks
+- Protocol downgrade attacks
+- Cookie hijacking over insecure connections
+
+#### Test Evidence
+
+```bash
+# Verify HSTS header
+curl -I https://jupyter.mlops.work 2>&1 | grep -i strict
+
+# Expected output:
+# strict-transport-security: max-age=31536000; includeSubDomains; preload
+```
+
+**Parameters**:
+- `max-age=31536000`: 365 days (1 year)
+- `includeSubDomains`: Protects *.mlops.work
+- `preload`: Eligible for browser preload list
+
+**Protection Against**:
+- SSL Stripping attacks
+- Protocol downgrade attacks
+- Cookie hijacking over insecure connections
+
+#### Test Evidence
+
+```bash
+# Verify HSTS header
+curl -I https://jupyter.mlops.work 2>&1 | grep -i strict
+
+# Expected output:
+# strict-transport-security: max-age=31536000; includeSubDomains; preload
+```
+
 #### SSL Labs Test (Quarterly)
-- URL: https://www.ssllabs.com/ssltest/
 - Target: jupyter.mlops.work
 - Expected Grade: A or A+
+
+#### Grade History
+
+| Date | Grade | Changes |
+|------|-------|---------|
+| 2026-02-09 | A | Initial TLS configuration |
+| 2026-02-11 | **A+** | Added HSTS with 1-year max-age |
 
 ---
 
