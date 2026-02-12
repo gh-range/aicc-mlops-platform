@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: traefik-ingress-egress
+  namespace: traefik-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: traefik
+  policyTypes:
+    - Ingress
+    - Egress
+  
+  ingress:
+    # Allow all ingress (no restrictions)
+    - {}
+  
+  egress:
+    # Allow all egress within same namespace
+    - to:
+        - podSelector: {}
+    
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+    
+    # Allow to all namespaces (temporary - for debugging)
+    - to:
+        - namespaceSelector: {}
+    
+    # Allow to external
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
