@@ -10,8 +10,17 @@ spec:
   policyTypes:
     - Ingress
     - Egress
-  
+
   ingress:
+    # Allow from hub
+    - from:
+        - podSelector:
+            matchLabels:
+              component: hub
+      ports:
+        - protocol: TCP
+          port: 8001
+
     # Only allow from Traefik
     - from:
         - namespaceSelector:
@@ -25,7 +34,7 @@ spec:
           port: 8000
         - protocol: TCP
           port: 8001
-  
+
   egress:
     # Allow DNS
     - to:
