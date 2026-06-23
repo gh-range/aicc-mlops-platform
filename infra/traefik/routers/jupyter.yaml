@@ -20,8 +20,6 @@ spec:
       kind: Rule
       middlewares:
         # Service middleware（from ../services/jupyterhub/）
-        - name: jupyterhub-websocket
-          namespace: traefik-system
         - name: jupyterhub-buffering
           namespace: traefik-system
         # Golbal middleware（from ../middlewares/）
