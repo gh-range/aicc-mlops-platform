@@ -16,10 +16,9 @@ spec:
     stsSeconds: 31536000
     frameDeny: true # anti clickjacking
     customFrameOptionsValue: "SAMEORIGIN"
-    customResponseHeaders:
-      X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex"
-      Server: ""  # Hide server version
     referrerPolicy: "same-origin" # Referrer limit
     customResponseHeaders: # remove traefik version info
-      X-Powered-By: "AICC-MLOps-MAV" 
+      X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex"
+      Server: ""  # Hide server version
+      X-Powered-By: "AICC-MLOps-MAV"
 
