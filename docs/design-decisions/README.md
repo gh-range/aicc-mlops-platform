@@ -8,10 +8,12 @@ Architecture Decision Records (ADRs)
 
 ## Contents
 
-_Will be populated during implementation_
+_Full index pending; latest entry below_
+
+- [ADR-017: Phased Component Upgrade Strategy](ADR-017-phased-component-upgrade-strategy.md) (2026-07-20)
 
 ---
 
 **Part of**: AI Computing Center MLOps Platform  
 **Managed by**: Range  
-**Last Updated**: 2025-12-30
+**Last Updated**: 2026-07-20

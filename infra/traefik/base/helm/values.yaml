@@ -16,7 +16,6 @@ global:
 image:
   registry: docker.io
   repository: library/traefik 
-  tag: "v3.6.7"
   pullPolicy: IfNotPresent
 
 # ==============================================================================
@@ -27,7 +26,7 @@ image:
 # ==============================================================================
 deployment:
   enabled: true
-  kind: DaemonSet
+  kind: Deployment
   # replicas not applicable for DaemonSet
   terminationGracePeriodSeconds: 60
   minReadySeconds: 10
@@ -171,18 +170,18 @@ podSecurityContext:
 # Logging Configuration
 # Decision: Enable access logs in JSON format for audit compliance
 # ==============================================================================
-logs:
-  general:
-    level: INFO
-    format: json
-  access:
-    enabled: true
-    format: json
-    fields:
-      defaultMode: keep
-      names: {}
-      headers:
-        defaultMode: drop  # Privacy: drop headers by default
+log:
+  level: INFO
+  format: json
+
+accessLog:
+  enabled: true
+  format: json
+  fields:
+    defaultMode: keep
+    names: {}
+    headers:
+      defaultMode: drop
 
 # ==============================================================================
 # Metrics & Observability
@@ -243,7 +242,6 @@ ingressClass:
 # Rationale: Provides real-time insights into routing logic and service health
 # ==============================================================================
 api:
-  enabled: true
   dashboard: true
   insecure: false  # Ensure API is not exposed on port 8080 without protection
 

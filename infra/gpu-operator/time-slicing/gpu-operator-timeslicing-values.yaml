@@ -3,7 +3,6 @@ operator:
 
 devicePlugin:
   enabled: true
-  version: v0.18.1
 
   # Use Time-Slicing ConfigMap
   config:
@@ -13,12 +12,12 @@ devicePlugin:
   env:
   - name: PASS_DEVICE_SPECS
     value: "true"
-  - name: FAIL_ON_INIT_ERROR
-    value: "true"
-  - name: DEVICE_LIST_STRATEGY
-    value: "envvar"
-  - name: DEVICE_ID_STRATEGY
-    value: "uuid"
+#  - name: FAIL_ON_INIT_ERROR
+#    value: "true"
+#  - name: DEVICE_LIST_STRATEGY
+#    value: "envvar"
+#  - name: DEVICE_ID_STRATEGY
+#    value: "uuid"
 
 toolkit:
   enabled: true
@@ -37,6 +36,8 @@ driver:
 
 dcgm:
   enabled: true
+  repository: nvcr.io/nvidia/cloud-native
+  version: "4.6.0-1-ubuntu24.04"
 
 dcgmExporter:
   enabled: true

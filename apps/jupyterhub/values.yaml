@@ -1,6 +1,10 @@
 # JupyterHub Configuration for GPU Time-Slicing
 
 hub:
+  image:
+     name: quay.io/jupyterhub/k8s-hub
+     pullPolicy: IfNotPresent
+
   db:
     type: sqlite-memory
 
