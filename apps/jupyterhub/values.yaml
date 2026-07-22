@@ -87,9 +87,21 @@ singleuser:
     guarantee: 1G
 
   image:
-    name: quay.io/jupyter/minimal-notebook
-    tag: ubuntu-24.04
+    name: quay.io/jupyter/base-notebook
+    tag: latest
     pullPolicy: IfNotPresent
+ 
+  # AUTO strategy: installs zh-TW language pack at pod startup.
+  # See docker/jupyter-notebook/README.md for the MANUAL (custom image)
+  # alternative to switch to once the base image tag is finalized.
+  lifecycleHooks:
+    postStart:
+      exec:
+        command:
+          - "sh"
+          - "-c"
+          - >
+            pip install --quiet --no-cache-dir jupyterlab-language-pack-zh-TW || true
 
   storage:
     type: dynamic
